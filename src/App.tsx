@@ -1,25 +1,44 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { Layout, Menu } from "antd";
+import React from "react";
+import "antd/dist/antd.css";
+import {
+  RetweetOutlined,
+  ReadOutlined,
+  CalendarOutlined,
+  DesktopOutlined,
+  TeamOutlined,
+  OrderedListOutlined,
+} from "@ant-design/icons";
+
+const { Header, Content } = Layout;
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Layout className="layout">
+      <Header>
+        <Menu theme="dark" mode="horizontal" defaultSelectedKeys={["1"]}>
+          <Menu.Item key="1" icon={<RetweetOutlined />}>
+            Jobs
+          </Menu.Item>
+          <Menu.Item key="2" icon={<CalendarOutlined />}>
+            Schedules
+          </Menu.Item>
+          <Menu.Item key="3" icon={<OrderedListOutlined />}>
+            Tasks
+          </Menu.Item>
+          <Menu.Item key="4" icon={<ReadOutlined />}>
+            Logs
+          </Menu.Item>
+          <Menu.Item key="5" icon={<DesktopOutlined />}>
+            Machines
+          </Menu.Item>
+          <Menu.Item key="6" icon={<TeamOutlined />}>
+            Users
+          </Menu.Item>
+        </Menu>
+      </Header>
+      <Content></Content>
+    </Layout>
   );
 }
 
