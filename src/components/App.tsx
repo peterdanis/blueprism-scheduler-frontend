@@ -1,27 +1,47 @@
 import React, { useState } from "react";
 import { Layout } from "antd";
 import "antd/dist/antd.css";
-import { menuItems, MenuItemsKeys, Navbar } from "./Navbar";
+import { Navbar } from "./Navbar";
 import { GlobalState } from "./GlobalState";
-import { SelectInfo } from "rc-menu/lib/interface";
+import Jobs from "./Jobs";
+import Schedules from "./Schedules";
+import Tasks from "./Tasks";
+import Logs from "./Logs";
+import Machines from "./Machines";
+import Users from "./Users";
+import Settings from "./Settings";
 
 const { Header, Content } = Layout;
 
 const App = () => {
-  const [component, setComponent] = useState(menuItems.Jobs.component);
+  const [key, setKey] = useState("jobs");
+
+  let component;
+  switch (key) {
+    case "Jobs":
+      component = <Jobs />;
+      break;
+    case "Tasks":
+      component = <Tasks />;
+      break;
+    case "Users":
+      component = <Users />;
+      break;
+    default:
+      break;
+  }
 
   return (
     <GlobalState>
       <Layout className="layout" style={{ height: "100%" }}>
         <Header>
           <Navbar
-            onSelect={(e: SelectInfo) => {
-              const key = e.key as MenuItemsKeys;
-              setComponent(menuItems[key].component);
+            onSelect={(e) => {
+              setKey(e.key as string);
             }}
           />
         </Header>
-        <Content children={component} style={{ height: "100%" }}></Content>
+        <Content style={{ height: "100%" }}>{component}</Content>
       </Layout>
     </GlobalState>
   );
