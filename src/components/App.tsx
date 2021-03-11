@@ -41,7 +41,9 @@ const App = () => {
             }}
           />
         </Header>
-        <Content style={{ height: "100%" }}>{component}</Content>
+        <Content style={{ height: "100%", margin: "24px" }}>
+          {component}
+        </Content>
       </Layout>
     </GlobalState>
   );
