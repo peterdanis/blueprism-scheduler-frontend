@@ -1,4 +1,4 @@
-import openNotification from "../utils/notification";
+import notification from "../utils/notification";
 import { Button, Modal } from "antd";
 import React, { forwardRef, useImperativeHandle, useState } from "react";
 
@@ -9,57 +9,53 @@ type Props = {
   okButtonName?: string;
   cancelButtonName?: string;
   title?: string;
+  okButtonDisabled?: boolean;
 };
 
 const CustomModal = forwardRef((props: Props, ref) => {
-  const [isModalVisible, setModalVisible] = useState(false);
-  const [isOkLoading, setOkLoading] = useState(false);
-  const [isCancelLoading, setCancelLoading] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isOkLoading, setIsOkLoading] = useState(false);
+  const [isCancelLoading, setIsCancelLoading] = useState(false);
 
   useImperativeHandle(ref, () => ({
     showModal: () => {
-      setModalVisible(true);
+      setIsModalVisible(true);
     },
   }));
 
-  const handleOk = () => {
-    setOkLoading(true);
-    const result = props.okFn();
-    if (
-      typeof result.then === "function" &&
-      typeof result.catch === "function"
-    ) {
-      console.log("here");
-      result
-        .then(() => {
-          setOkLoading(false);
-          setModalVisible(false);
-        })
-        .catch((error: Error) => {
-          openNotification("Error", error.message, "error");
-          console.error(error);
-        });
-    } else {
-      setOkLoading(false);
-      setModalVisible(false);
+  const handleOk = async () => {
+    setIsOkLoading(true);
+    try {
+      if (props.okFn) {
+        await props.okFn();
+      }
+    } catch (error) {
+      notification("Error", error.message, "error");
+      console.error(error);
+    } finally {
+      setIsOkLoading(false);
+      setIsModalVisible(false);
     }
   };
 
   const handleCancel = async () => {
-    setCancelLoading(true);
+    setIsCancelLoading(true);
     try {
-      if (typeof props.cancelFn === "function") {
+      if (props.cancelFn) {
         await props.cancelFn();
       }
     } catch (error) {
-      openNotification("Error", error.message, "error");
+      notification("Error", error.message, "error");
       console.error(error);
+    } finally {
+      setIsCancelLoading(false);
+      setIsModalVisible(false);
     }
-    setCancelLoading(false);
-    setModalVisible(false);
   };
   return (
     <Modal
+      destroyOnClose={true}
+      maskClosable={false}
       title={props.title}
       visible={isModalVisible}
       onOk={handleOk}
@@ -79,12 +75,14 @@ const CustomModal = forwardRef((props: Props, ref) => {
           type="primary"
           loading={isOkLoading}
           onClick={handleOk}
-          disabled={isCancelLoading}
+          disabled={isCancelLoading || props.okButtonDisabled || false}
         >
           {props.okButtonName || "Ok"}
         </Button>,
       ]}
-    ></Modal>
+    >
+      {props.children}
+    </Modal>
   );
 });
 
