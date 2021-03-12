@@ -3,14 +3,13 @@ import { notification } from "antd";
 const openNotification = (
   title: string,
   message: string,
-  kind: "info" | "warning" | "error" = "info"
+  kind: "info" | "warning" | "error" = "info",
+  duration: number = 0
 ) => {
   notification[kind]({
     message: title,
     description: message,
-    onClick: () => {
-      console.log("Notification Clicked!");
-    },
+    duration,
   });
 };
 
