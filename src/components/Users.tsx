@@ -4,22 +4,6 @@ import React, { useEffect, useRef, useState } from "react";
 import fetchApi from "../services/fetchApi";
 import openNotification from "../utils/notification";
 import CustomModal from "./CustomModal";
-import { promisify } from "util";
-
-const addNewUser = async () => {
-  const data = { name: "testUser 5" /* password: "abcd" */ };
-  await fetchApi("/api/users", "POST", data);
-};
-
-const testFn = async () => {
-  return new Promise((resolve, reject) => {
-    console.log("before");
-    setTimeout(() => {
-      console.log("after");
-      resolve("value");
-    }, 3000);
-  });
-};
 
 const Users = () => {
   const [users, setUsers] = useState([]);
@@ -27,7 +11,8 @@ const Users = () => {
 
   const modalRef = useRef<{ showModal: () => void }>(null);
 
-  useEffect(() => {
+  const loadData = () => {
+    setIsLoading(true);
     fetchApi("/api/users")
       .then((data) => {
         setIsLoading(false);
@@ -47,7 +32,18 @@ const Users = () => {
         openNotification("Error", error.message, "error");
         console.error(error);
       });
-  }, []);
+  };
+
+  const addNewUser = async () => {
+    const data = { name: "testUser 10", password: "abcd" };
+    const result = await fetchApi("/api/users", "POST", data);
+    if (result) {
+      openNotification("User created", undefined, "success", 6);
+      loadData();
+    }
+  };
+
+  useEffect(loadData, []);
 
   return (
     <>
@@ -61,10 +57,9 @@ const Users = () => {
         Add new user
       </Button>
       <CustomModal
-        okFn={testFn}
-        cancelFn={testFn}
-        okButtonName="1"
-        cancelButtonName="2"
+        okFn={addNewUser}
+        okButtonName="Create"
+        cancelButtonName="Cancel"
         ref={modalRef}
       />
       <Table

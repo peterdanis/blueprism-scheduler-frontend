@@ -8,6 +8,7 @@ type Props = {
   cancelFn?: Function;
   okButtonName?: string;
   cancelButtonName?: string;
+  title?: string;
 };
 
 const CustomModal = forwardRef((props: Props, ref) => {
@@ -59,10 +60,11 @@ const CustomModal = forwardRef((props: Props, ref) => {
   };
   return (
     <Modal
-      title="Basic Modal"
+      title={props.title}
       visible={isModalVisible}
       onOk={handleOk}
       onCancel={handleCancel}
+      closable={false}
       footer={[
         <Button
           key="back"
@@ -82,11 +84,7 @@ const CustomModal = forwardRef((props: Props, ref) => {
           {props.okButtonName || "Ok"}
         </Button>,
       ]}
-    >
-      <p>Some contents...</p>
-      <p>Some contents...</p>
-      <p>Some contents...</p>
-    </Modal>
+    ></Modal>
   );
 });
 
