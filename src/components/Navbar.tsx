@@ -1,5 +1,5 @@
 import React from "react";
-import { Menu } from "antd";
+import { Button, Menu } from "antd";
 import {
   CalendarOutlined,
   DesktopOutlined,
@@ -43,6 +43,13 @@ export const Navbar = (props: Props) => {
       onSelect={props.onSelect}
     >
       <>{MenuItems}</>
+      <Button
+        danger
+        type={"primary"}
+        style={{ right: "16px", marginTop: "16px", position: "absolute" }}
+      >
+        Logout
+      </Button>
     </Menu>
   );
 };
