@@ -1,12 +1,19 @@
-import { Button, Table } from "antd";
+import { Button, Space, Table } from "antd";
 import Column from "antd/lib/table/Column";
 import React, { useEffect, useRef, useState } from "react";
 import fetchApi from "../../services/fetchApi";
 import openNotification from "../../utils/notification";
+import SearchBox from "../SearchBox";
 import AddUserModal from "./AddUserModal";
 
+type User = {
+  id: number;
+  name: string;
+};
+
 const Users = () => {
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState([] as User[]);
+  const [filteredUsers, setFilteredUsers] = useState([] as User[]);
   const [isLoading, setIsLoading] = useState(true);
 
   const modalRef = useRef<{ showModal: () => void }>(null);
@@ -38,27 +45,47 @@ const Users = () => {
 
   return (
     <>
-      <Button
-        type="primary"
-        style={{ marginBottom: 16 }}
-        onClick={() => {
-          modalRef?.current?.showModal();
-        }}
-      >
-        Add new user
-      </Button>
       <AddUserModal loadData={loadData} ref={modalRef} />
-      <Table
-        dataSource={users}
-        rowKey={(record: any) => record.id}
-        loading={isLoading}
-        size="middle"
-      >
-        <Column title="ID" dataIndex="id" />
-        <Column title="Username" dataIndex="name" />
-        <Column title="Password set" dataIndex="password" />
-        <Column title="API key set" dataIndex="apiKey" />
-      </Table>
+      <Space direction="vertical" size="large">
+        <Button
+          type="primary"
+          onClick={() => {
+            modalRef?.current?.showModal();
+          }}
+        >
+          Add new user
+        </Button>
+        <SearchBox
+          list={users}
+          keys={["id", "name"]}
+          placeholder="Search by ID"
+          resultsSetter={setFilteredUsers}
+        />
+        <Table
+          dataSource={filteredUsers}
+          rowKey={(record: any) => record.id}
+          loading={isLoading}
+          size="middle"
+          sticky={true}
+        >
+          <Column title="ID" dataIndex="id" />
+          <Column title="Username" dataIndex="name" />
+          <Column title="Password set" dataIndex="password" />
+          <Column title="API key set" dataIndex="apiKey" />
+          <Column
+            title="Actions"
+            dataIndex="actions"
+            render={() => (
+              <>
+                <Space>
+                  <Button>Generate API key</Button>
+                  <Button danger>Delete</Button>
+                </Space>
+              </>
+            )}
+          />
+        </Table>
+      </Space>
     </>
   );
 };
