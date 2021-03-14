@@ -24,7 +24,11 @@ const fetchApi = async (
   } catch (error) {
     let _error = error;
     if (typeof error.json === "function") {
-      _error = await error.json();
+      try {
+        _error = await error.json();
+      } catch (e) {
+        _error.error = _error.statusText;
+      }
     }
     console.error(error);
     console.error(_error);
