@@ -5,6 +5,8 @@ import fetchApi from "../../services/fetchApi";
 import openNotification from "../../utils/notification";
 import SearchBox from "../SearchBox";
 import AddUserModal from "./AddUserModal";
+import { DeleteOutlined } from "@ant-design/icons";
+import DeleteModal from "../DeleteModal";
 
 type User = {
   id: number;
@@ -15,8 +17,10 @@ const Users = () => {
   const [users, setUsers] = useState([] as User[]);
   const [filteredUsers, setFilteredUsers] = useState([] as User[]);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedUserId, setSelectedUserId] = useState(0);
 
-  const modalRef = useRef<{ showModal: () => void }>(null);
+  const AddUserModalRef = useRef<{ showModal: () => void }>(null);
+  const DeleteUserModalRef = useRef<{ showModal: () => void }>(null);
 
   const loadData = () => {
     setIsLoading(true);
@@ -45,12 +49,18 @@ const Users = () => {
 
   return (
     <>
-      <AddUserModal loadData={loadData} ref={modalRef} />
+      <AddUserModal loadData={loadData} ref={AddUserModalRef} />
+      <DeleteModal
+        id={selectedUserId}
+        route={"/api/users"}
+        ref={DeleteUserModalRef}
+        loadData={loadData}
+      />
       <Space direction="vertical" size="large">
         <Button
           type="primary"
           onClick={() => {
-            modalRef?.current?.showModal();
+            AddUserModalRef?.current?.showModal();
           }}
         >
           Add new user
@@ -58,7 +68,7 @@ const Users = () => {
         <SearchBox
           list={users}
           keys={["id", "name"]}
-          placeholder="Search by ID"
+          placeholder="Search by ID or name"
           resultsSetter={setFilteredUsers}
         />
         <Table
@@ -75,11 +85,19 @@ const Users = () => {
           <Column
             title="Actions"
             dataIndex="actions"
-            render={() => (
+            render={(_, record: User) => (
               <>
                 <Space>
-                  <Button>Generate API key</Button>
-                  <Button danger>Delete</Button>
+                  <Button size="small">Generate API key</Button>
+                  <Button
+                    size="small"
+                    danger
+                    icon={<DeleteOutlined />}
+                    onClick={(e) => {
+                      setSelectedUserId(record.id);
+                      DeleteUserModalRef?.current?.showModal();
+                    }}
+                  />
                 </Space>
               </>
             )}

@@ -10,6 +10,7 @@ type Props = {
   cancelButtonName?: string;
   title?: string;
   okButtonDisabled?: boolean;
+  danger?: boolean;
 };
 
 const CustomModal = forwardRef((props: Props, ref) => {
@@ -73,6 +74,7 @@ const CustomModal = forwardRef((props: Props, ref) => {
         <Button
           key="submit"
           type="primary"
+          danger={props.danger}
           loading={isOkLoading}
           onClick={handleOk}
           disabled={isCancelLoading || props.okButtonDisabled || false}

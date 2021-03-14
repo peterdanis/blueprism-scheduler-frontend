@@ -3,7 +3,7 @@ import CustomModal from "../CustomModal";
 import { Form, Input } from "antd";
 import fetchApi from "../../services/fetchApi";
 import { FieldData } from "rc-field-form/lib/interface";
-import openNotification from "../../utils/notification";
+import notification from "../../utils/notification";
 
 type Props = {
   loadData: () => void;
@@ -29,7 +29,7 @@ const AddUserModal = forwardRef((props: Props, ref) => {
     const result = await fetchApi("/api/users", "POST", data);
     setFormData([]);
     if (result) {
-      openNotification("User created", undefined, "success", 6);
+      notification("User created", undefined, "success", 6);
       props.loadData();
     }
   };
