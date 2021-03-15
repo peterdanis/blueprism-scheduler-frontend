@@ -1,7 +1,7 @@
 import notification from "../utils/notification";
 import retry from "../utils/retry";
 
-type Method = "GET" | "POST" | "DELETE";
+type Method = "DELETE" | "GET" | "PATCH" | "POST";
 
 const fetchApi = async (
   url: string,

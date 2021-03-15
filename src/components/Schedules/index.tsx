@@ -10,10 +10,33 @@ import {
   EditOutlined,
   CaretRightOutlined,
 } from "@ant-design/icons";
+import EditScheduleModal from "./EditScheduleModal";
 
-type Schedule = {
-  id: number;
+type ScheduleTask = {};
+
+type OnError = {
+  action: "email";
+  emailTo?: string;
+  emailCc?: string;
+};
+
+export type Schedule = {
+  id?: number;
+  force?: boolean;
   name: string;
+  hardForceTime?: number;
+  hardTimeout?: number;
+  onError?: OnError;
+  priority?: number;
+  rule: string;
+  softForceTime?: number;
+  softTimeout?: number;
+  validFrom: Date;
+  validUntil?: Date;
+  waitTime?: number;
+  scheduleTask?: ScheduleTask[];
+  runtimeResource?: RuntimeResource;
+  runtimeResourceId: number;
 };
 
 type RuntimeResource = {
@@ -27,7 +50,7 @@ const Schedules = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedSchedule, setSelectedSchedule] = useState(0);
 
-  // const AddUserModalRef = useRef<{ showModal: () => void }>(null);
+  const editScheduleModalRef = useRef<{ showModal: () => void }>(null);
   // const DeleteUserModalRef = useRef<{ showModal: () => void }>(null);
 
   const loadData = () => {
@@ -47,8 +70,12 @@ const Schedules = () => {
 
   return (
     <>
-      {/* <AddUserModal loadData={loadData} ref={AddUserModalRef} />
-      <DeleteModal
+      <EditScheduleModal
+        loadData={loadData}
+        id={selectedSchedule}
+        ref={editScheduleModalRef}
+      />
+      {/* <DeleteModal
         id={selectedJobId}
         route={"/api/users"}
         ref={DeleteUserModalRef}
@@ -96,7 +123,7 @@ const Schedules = () => {
                     type={"primary"}
                     icon={<CaretRightOutlined />}
                     onClick={(e) => {
-                      setSelectedSchedule(record.id);
+                      setSelectedSchedule(record.id!);
                       // DeleteUserModalRef?.current?.showModal();
                     }}
                   >
@@ -107,8 +134,8 @@ const Schedules = () => {
                     type={"primary"}
                     icon={<EditOutlined />}
                     onClick={(e) => {
-                      setSelectedSchedule(record.id);
-                      // DeleteUserModalRef?.current?.showModal();
+                      setSelectedSchedule(record.id!);
+                      editScheduleModalRef?.current?.showModal();
                     }}
                   />
                   <Button
@@ -117,7 +144,7 @@ const Schedules = () => {
                     type={"primary"}
                     icon={<DeleteOutlined />}
                     onClick={(e) => {
-                      setSelectedSchedule(record.id);
+                      setSelectedSchedule(record.id!);
                       // DeleteUserModalRef?.current?.showModal();
                     }}
                   />
