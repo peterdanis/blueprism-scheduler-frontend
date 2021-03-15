@@ -27,7 +27,8 @@ const EditScheduleModal = forwardRef(({ loadData, id }: Props, ref) => {
       validFrom: new Date("2020-12-31"),
       runtimeResourceId: getFormValue("machine"),
     };
-    const result = await fetchApi(`/api/schedules${id}`, "PATCH", data);
+    const result = await fetchApi(`/api/schedules/${id}`, "PATCH", data);
+    console.log(result);
     setFormData([]);
     if (result) {
       notification("Schedule updated", undefined, "success", 6);
@@ -57,7 +58,7 @@ const EditScheduleModal = forwardRef(({ loadData, id }: Props, ref) => {
         wrapperCol={{ span: 16 }}
         fields={formData}
         onFieldsChange={(_, fields) => {
-          console.log(fields);
+          // console.log(fields);
           setFormData(fields);
         }}
       >

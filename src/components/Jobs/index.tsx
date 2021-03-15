@@ -111,11 +111,29 @@ const Jobs = () => {
             <Column
               title="Status"
               dataIndex="status"
-              render={(job) => {
-                console.log(job);
+              render={(status, record) => {
+                let color: "success" | "default" | "error";
+                switch (status) {
+                  case "waiting":
+                    color = "default";
+                    break;
+                  case "finished":
+                    color = "success";
+                    break;
+                  case "running":
+                    color = "success";
+                    break;
+                  case "failed":
+                    color = "error";
+                    break;
+
+                  default:
+                    color = "default";
+                    break;
+                }
                 return (
-                  <Tag color="red" key={Math.random()}>
-                    {job}
+                  <Tag color={color} key={`${record}-tag`}>
+                    {status}
                   </Tag>
                 );
               }}
@@ -125,8 +143,20 @@ const Jobs = () => {
               render={(record) => record.runtimeResource.friendlyName}
             />
             <Column title="Priority" dataIndex="priority" />
-            <Column title="Add time" dataIndex="addTime" />
-            <Column title="Start time" dataIndex="startTime" />
+            <Column
+              title="Add time"
+              render={(record) =>
+                record.addTime.replace("T", " ").replace(".000", "")
+              }
+            />
+            <Column
+              title="Start time"
+              render={(record) => {
+                if (record.startTime) {
+                  return record.startTime.replace("T", " ").replace(".000", "");
+                }
+              }}
+            />
 
             <Column
               title="Actions"
@@ -167,21 +197,54 @@ const Jobs = () => {
             <Column
               title="Status"
               dataIndex="status"
-              render={(job) => {
-                console.log(job);
+              render={(status, record) => {
+                let color: "success" | "default" | "error" | "processing";
+                switch (status) {
+                  case "waiting":
+                    color = "default";
+                    break;
+                  case "finished":
+                    color = "success";
+                    break;
+                  case "running":
+                    color = "processing";
+                    break;
+                  case "failed":
+                    color = "error";
+                    break;
+
+                  default:
+                    color = "default";
+                    break;
+                }
                 return (
-                  <Tag color="red" key={Math.random()}>
-                    {job}
+                  <Tag color={color} key={`${record}-tag`}>
+                    {status}
                   </Tag>
                 );
               }}
             />
             <Column title="Machine" dataIndex="runtimeResourceId" />
             <Column title="Priority" dataIndex="priority" />
-            <Column title="message" dataIndex="message" />
-            <Column title="Add time" dataIndex="addTime" />
-            <Column title="Start time" dataIndex="startTime" />
-            <Column title="End time" dataIndex="endTime" />
+            <Column title="Message" dataIndex="message" />
+            <Column
+              title="Add time"
+              render={(record) =>
+                record.addTime.replace("T", " ").replace(".000", "")
+              }
+            />
+            <Column
+              title="Start time"
+              render={(record) =>
+                record.startTime.replace("T", " ").replace(".000", "")
+              }
+            />
+            <Column
+              title="End time"
+              render={(record) =>
+                record.endTime.replace("T", " ").replace(".000", "")
+              }
+            />
           </ColumnGroup>
         </Table>
       </Space>
