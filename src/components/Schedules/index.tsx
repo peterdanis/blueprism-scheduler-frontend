@@ -1,10 +1,15 @@
-import { Button, Space, Table, Tag } from "antd";
+import { Button, Space, Table } from "antd";
 import Column from "antd/lib/table/Column";
 import React, { useEffect, useRef, useState } from "react";
 import fetchApi from "../../services/fetchApi";
 import { idColumnWidth, tableSettings } from "../../utils/commonSettings";
 import openNotification from "../../utils/notification";
 import SearchBox from "../SearchBox";
+import {
+  DeleteOutlined,
+  EditOutlined,
+  CaretRightOutlined,
+} from "@ant-design/icons";
 
 type Schedule = {
   id: number;
@@ -20,7 +25,7 @@ const Schedules = () => {
   const [schedules, setSchedules] = useState([] as Schedule[]);
   const [filteredSchedules, setFilteredSchedules] = useState([] as Schedule[]);
   const [isLoading, setIsLoading] = useState(true);
-  // const [selectedJobId, setSelectedJobId] = useState(0);
+  const [selectedSchedule, setSelectedSchedule] = useState(0);
 
   // const AddUserModalRef = useRef<{ showModal: () => void }>(null);
   // const DeleteUserModalRef = useRef<{ showModal: () => void }>(null);
@@ -50,14 +55,14 @@ const Schedules = () => {
         loadData={loadData}
       /> */}
       <Space direction="vertical" size="large">
-        {/* <Button
+        <Button
           type="primary"
           onClick={() => {
-            AddUserModalRef?.current?.showModal();
+            // AddUserModalRef?.current?.showModal();
           }}
         >
-          Add new user
-        </Button> */}
+          Add new schedule
+        </Button>
         <SearchBox
           list={schedules}
           keys={["id", "name", "runtimeResource.friendlyName"]}
@@ -72,32 +77,54 @@ const Schedules = () => {
         >
           <Column title="ID" dataIndex="id" width={idColumnWidth} />
           <Column title="Name" dataIndex="name" />
-          <Column title="Priority" dataIndex="priority" />
           <Column
             title="Machine"
             render={(record) => record.runtimeResource.friendlyName}
           />
+          <Column title="Priority" dataIndex="priority" />
+          <Column title="Valid from" dataIndex="validFrom" />
+          <Column title="Valid until" dataIndex="validUntil" />
 
-          {/* <Column
+          <Column
             title="Actions"
             dataIndex="actions"
-            render={(_, record: User) => (
+            render={(_, record: Schedule) => (
               <>
                 <Space>
-                  <Button size="small">Generate API key</Button>
+                  <Button
+                    size="small"
+                    type={"primary"}
+                    icon={<CaretRightOutlined />}
+                    onClick={(e) => {
+                      setSelectedSchedule(record.id);
+                      // DeleteUserModalRef?.current?.showModal();
+                    }}
+                  >
+                    Run
+                  </Button>
+                  <Button
+                    size="small"
+                    type={"primary"}
+                    icon={<EditOutlined />}
+                    onClick={(e) => {
+                      setSelectedSchedule(record.id);
+                      // DeleteUserModalRef?.current?.showModal();
+                    }}
+                  />
                   <Button
                     size="small"
                     danger
+                    type={"primary"}
                     icon={<DeleteOutlined />}
                     onClick={(e) => {
-                      setSelectedJobId(record.id);
-                      DeleteUserModalRef?.current?.showModal();
+                      setSelectedSchedule(record.id);
+                      // DeleteUserModalRef?.current?.showModal();
                     }}
                   />
                 </Space>
               </>
             )}
-          /> */}
+          />
         </Table>
       </Space>
     </>

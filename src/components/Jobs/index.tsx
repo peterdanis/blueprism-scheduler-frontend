@@ -5,6 +5,8 @@ import fetchApi from "../../services/fetchApi";
 import { idColumnWidth, tableSettings } from "../../utils/commonSettings";
 import openNotification from "../../utils/notification";
 import SearchBox from "../SearchBox";
+import { StopOutlined } from "@ant-design/icons";
+import ColumnGroup from "antd/lib/table/ColumnGroup";
 
 type Schedule = {
   id: number;
@@ -36,7 +38,7 @@ const Jobs = () => {
   const [filteredJobLogs, setFilteredJobLogs] = useState([] as JobLog[]);
   const [isLoadingJobs, setIsLoadingJobs] = useState(true);
   const [isLoadingJobLogs, setIsLoadingJobLogs] = useState(true);
-  // const [selectedJobId, setSelectedJobId] = useState(0);
+  const [selectedJobId, setSelectedJobId] = useState(0);
 
   // const AddUserModalRef = useRef<{ showModal: () => void }>(null);
   // const DeleteUserModalRef = useRef<{ showModal: () => void }>(null);
@@ -100,45 +102,53 @@ const Jobs = () => {
           loading={isLoadingJobs}
           {...tableSettings}
         >
-          <Column title="ID" dataIndex="id" width={idColumnWidth} />
-          <Column title="Priority" dataIndex="priority" />
-          <Column
-            title="Machine"
-            render={(record) => record.runtimeResource.friendlyName}
-          />
-          <Column title="Schedule" render={(record) => record.schedule.name} />
-          <Column
-            title="Status"
-            dataIndex="status"
-            render={(job) => {
-              console.log(job);
-              return (
-                <Tag color="red" key={Math.random()}>
-                  {job}
-                </Tag>
-              );
-            }}
-          />
-          {/* <Column
-            title="Actions"
-            dataIndex="actions"
-            render={(_, record: User) => (
-              <>
-                <Space>
-                  <Button size="small">Generate API key</Button>
-                  <Button
-                    size="small"
-                    danger
-                    icon={<DeleteOutlined />}
-                    onClick={(e) => {
-                      setSelectedJobId(record.id);
-                      DeleteUserModalRef?.current?.showModal();
-                    }}
-                  />
-                </Space>
-              </>
-            )}
-          /> */}
+          <ColumnGroup title="Job queue" align="left">
+            <Column title="ID" dataIndex="id" width={idColumnWidth} />
+            <Column
+              title="Schedule"
+              render={(record) => record.schedule.name}
+            />
+            <Column
+              title="Status"
+              dataIndex="status"
+              render={(job) => {
+                console.log(job);
+                return (
+                  <Tag color="red" key={Math.random()}>
+                    {job}
+                  </Tag>
+                );
+              }}
+            />
+            <Column
+              title="Machine"
+              render={(record) => record.runtimeResource.friendlyName}
+            />
+            <Column title="Priority" dataIndex="priority" />
+            <Column title="Add time" dataIndex="addTime" />
+            <Column title="Start time" dataIndex="startTime" />
+
+            <Column
+              title="Actions"
+              dataIndex="actions"
+              render={(_, record: Job) => (
+                <>
+                  <Space>
+                    <Button
+                      size="small"
+                      type="primary"
+                      danger
+                      icon={<StopOutlined />}
+                      onClick={(e) => {
+                        setSelectedJobId(record.id);
+                        // DeleteUserModalRef?.current?.showModal();
+                      }}
+                    />
+                  </Space>
+                </>
+              )}
+            />
+          </ColumnGroup>
         </Table>
         <SearchBox
           list={jobLogs}
@@ -150,32 +160,29 @@ const Jobs = () => {
           dataSource={filteredJobLogs}
           rowKey={(record: any) => record.id}
           loading={isLoadingJobLogs}
-          size="middle"
-          sticky={true}
+          {...tableSettings}
         >
-          <Column title="Priority" dataIndex="priority" />
-          <Column title="Machine" dataIndex="runtimeResourceId" />
-          <Column title="Schedule" dataIndex="scheduleId" />
-          {/* <Column
-            title="Actions"
-            dataIndex="actions"
-            render={(_, record: User) => (
-              <>
-                <Space>
-                  <Button size="small">Generate API key</Button>
-                  <Button
-                    size="small"
-                    danger
-                    icon={<DeleteOutlined />}
-                    onClick={(e) => {
-                      setSelectedJobId(record.id);
-                      DeleteUserModalRef?.current?.showModal();
-                    }}
-                  />
-                </Space>
-              </>
-            )}
-          /> */}
+          <ColumnGroup title="Job log" align="left">
+            <Column title="Schedule" dataIndex="scheduleId" />
+            <Column
+              title="Status"
+              dataIndex="status"
+              render={(job) => {
+                console.log(job);
+                return (
+                  <Tag color="red" key={Math.random()}>
+                    {job}
+                  </Tag>
+                );
+              }}
+            />
+            <Column title="Machine" dataIndex="runtimeResourceId" />
+            <Column title="Priority" dataIndex="priority" />
+            <Column title="message" dataIndex="message" />
+            <Column title="Add time" dataIndex="addTime" />
+            <Column title="Start time" dataIndex="startTime" />
+            <Column title="End time" dataIndex="endTime" />
+          </ColumnGroup>
         </Table>
       </Space>
     </>

@@ -18,7 +18,7 @@ const Users = () => {
   const [users, setUsers] = useState([] as User[]);
   const [filteredUsers, setFilteredUsers] = useState([] as User[]);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedUserId, setSelectedUserId] = useState(0);
+  const [selectedUser, setSelectedUser] = useState(0);
 
   const AddUserModalRef = useRef<{ showModal: () => void }>(null);
   const DeleteUserModalRef = useRef<{ showModal: () => void }>(null);
@@ -52,7 +52,7 @@ const Users = () => {
     <>
       <AddUserModal loadData={loadData} ref={AddUserModalRef} />
       <DeleteModal
-        id={selectedUserId}
+        id={selectedUser}
         route={"/api/users"}
         ref={DeleteUserModalRef}
         loadData={loadData}
@@ -93,7 +93,7 @@ const Users = () => {
                     type={"primary"}
                     icon={<EditOutlined />}
                     onClick={(e) => {
-                      setSelectedUserId(record.id);
+                      setSelectedUser(record.id);
                       // DeleteUserModalRef?.current?.showModal();
                     }}
                   />
@@ -103,7 +103,7 @@ const Users = () => {
                     type={"primary"}
                     icon={<DeleteOutlined />}
                     onClick={(e) => {
-                      setSelectedUserId(record.id);
+                      setSelectedUser(record.id);
                       DeleteUserModalRef?.current?.showModal();
                     }}
                   />
