@@ -36,20 +36,22 @@ type Props = { onSelect: (e: SelectInfo) => void };
 
 export const Navbar = (props: Props) => {
   return (
-    <Menu
-      theme="dark"
-      mode="horizontal"
-      defaultSelectedKeys={[Object.keys(menuItems)[0]]}
-      onSelect={props.onSelect}
-    >
-      <>{MenuItems}</>
+    <>
       <Button
         danger
         type={"primary"}
-        style={{ right: "16px", marginTop: "16px", position: "absolute" }}
+        style={{ right: "16px", marginTop: "16px", position: "fixed" }}
       >
         Logout
       </Button>
-    </Menu>
+      <Menu
+        theme="dark"
+        mode="horizontal"
+        defaultSelectedKeys={[Object.keys(menuItems)[0]]}
+        onSelect={props.onSelect}
+      >
+        <>{MenuItems}</>
+      </Menu>
+    </>
   );
 };
