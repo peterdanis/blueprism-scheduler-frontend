@@ -18,10 +18,21 @@ const App = () => {
   const [component, setComponent] = useState(<Jobs />);
 
   useEffect(() => {
-    console.log("useEffect");
     switch (key) {
       case "Jobs":
         setComponent(<Jobs />);
+        break;
+      case "Machines":
+        setComponent(<Machines />);
+        break;
+      case "Schedules":
+        setComponent(<Schedules />);
+        break;
+      case "Settings":
+        setComponent(<Settings />);
+        break;
+      case "Logs":
+        setComponent(<Logs />);
         break;
       case "Tasks":
         setComponent(<Tasks />);

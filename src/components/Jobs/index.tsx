@@ -2,6 +2,7 @@ import { Button, Space, Table, Tag } from "antd";
 import Column from "antd/lib/table/Column";
 import React, { useEffect, useRef, useState } from "react";
 import fetchApi from "../../services/fetchApi";
+import { idColumnWidth, tableSettings } from "../../utils/commonSettings";
 import openNotification from "../../utils/notification";
 import SearchBox from "../SearchBox";
 
@@ -97,13 +98,15 @@ const Jobs = () => {
           dataSource={filteredJobs}
           rowKey={(record: any) => record.id}
           loading={isLoadingJobs}
-          size="middle"
-          sticky={true}
+          {...tableSettings}
         >
-          <Column title="ID" dataIndex="id" />
+          <Column title="ID" dataIndex="id" width={idColumnWidth} />
           <Column title="Priority" dataIndex="priority" />
-          <Column title="Machine" dataIndex="runtimeResource.friendlyName" />
-          <Column title="Schedule" dataIndex="schedule.name" />
+          <Column
+            title="Machine"
+            render={(record) => record.runtimeResource.friendlyName}
+          />
+          <Column title="Schedule" render={(record) => record.schedule.name} />
           <Column
             title="Status"
             dataIndex="status"

@@ -5,8 +5,9 @@ import fetchApi from "../../services/fetchApi";
 import openNotification from "../../utils/notification";
 import SearchBox from "../SearchBox";
 import AddUserModal from "./AddUserModal";
-import { DeleteOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import DeleteModal from "../DeleteModal";
+import { idColumnWidth, tableSettings } from "../../utils/commonSettings";
 
 type User = {
   id: number;
@@ -75,10 +76,9 @@ const Users = () => {
           dataSource={filteredUsers}
           rowKey={(record: any) => record.id}
           loading={isLoading}
-          size="middle"
-          sticky={true}
+          {...tableSettings}
         >
-          <Column title="ID" dataIndex="id" />
+          <Column title="ID" dataIndex="id" width={idColumnWidth} />
           <Column title="Username" dataIndex="name" />
           <Column title="Password set" dataIndex="password" />
           <Column title="API key set" dataIndex="apiKey" />
@@ -88,10 +88,19 @@ const Users = () => {
             render={(_, record: User) => (
               <>
                 <Space>
-                  <Button size="small">Generate API key</Button>
+                  <Button
+                    size="small"
+                    type={"primary"}
+                    icon={<EditOutlined />}
+                    onClick={(e) => {
+                      setSelectedUserId(record.id);
+                      // DeleteUserModalRef?.current?.showModal();
+                    }}
+                  />
                   <Button
                     size="small"
                     danger
+                    type={"primary"}
                     icon={<DeleteOutlined />}
                     onClick={(e) => {
                       setSelectedUserId(record.id);
