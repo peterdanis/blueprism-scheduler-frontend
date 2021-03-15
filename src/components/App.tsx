@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Layout } from "antd";
 import "antd/dist/antd.css";
 import { Navbar } from "./Navbar";
@@ -15,21 +15,24 @@ const { Header, Content } = Layout;
 
 const App = () => {
   const [key, setKey] = useState("jobs");
+  const [component, setComponent] = useState(<Jobs />);
 
-  let component;
-  switch (key) {
-    case "Jobs":
-      component = <Jobs />;
-      break;
-    case "Tasks":
-      component = <Tasks />;
-      break;
-    case "Users":
-      component = <Users />;
-      break;
-    default:
-      break;
-  }
+  useEffect(() => {
+    console.log("useEffect");
+    switch (key) {
+      case "Jobs":
+        setComponent(<Jobs />);
+        break;
+      case "Tasks":
+        setComponent(<Tasks />);
+        break;
+      case "Users":
+        setComponent(<Users />);
+        break;
+      default:
+        break;
+    }
+  }, [key]);
 
   return (
     <GlobalState>
