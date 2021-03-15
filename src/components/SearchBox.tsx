@@ -46,6 +46,7 @@ const SearchBox = <T extends unknown>({
       onChange={onSearch}
       placeholder={placeholder}
       style={{ width: "250px" }}
+      allowClear
     />
   );
 };
