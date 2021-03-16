@@ -39,12 +39,19 @@ const Jobs = () => {
   const [isLoadingJobs, setIsLoadingJobs] = useState(true);
   const [isLoadingJobLogs, setIsLoadingJobLogs] = useState(true);
   const [selectedJobId, setSelectedJobId] = useState(0);
+  const [schedules, setSchedules] = useState([] as Schedule[]);
+  const [runtimeResources, setRuntimeResources] = useState(
+    [] as RuntimeResource[]
+  );
 
   // const AddUserModalRef = useRef<{ showModal: () => void }>(null);
   // const DeleteUserModalRef = useRef<{ showModal: () => void }>(null);
 
   const loadData = () => {
     setIsLoadingJobs(true);
+    setIsLoadingJobLogs(true);
+
+    // Get job queue
     fetchApi("/api/jobs")
       .then((data) => {
         setIsLoadingJobs(false);
@@ -54,37 +61,47 @@ const Jobs = () => {
         openNotification("Error", error.message, "error");
         console.error(error);
       });
-    fetchApi("/api/jobLogs")
+
+    // Get schedules
+    const schedulesPromise = fetchApi("/api/schedules")
       .then((data) => {
-        setIsLoadingJobLogs(false);
-        setJobLogs(data);
+        setSchedules(data);
       })
       .catch((error) => {
         openNotification("Error", error.message, "error");
         console.error(error);
       });
+
+    // Get runtime resources
+    const runtimeResourcesPromise = fetchApi("/api/runtimeResources")
+      .then((data) => {
+        setRuntimeResources(data);
+      })
+      .catch((error) => {
+        openNotification("Error", error.message, "error");
+        console.error(error);
+      });
+
+    // Load schedule and runtime resource data first
+    Promise.all([schedulesPromise, runtimeResourcesPromise]).then(() => {
+      // Get job log
+      fetchApi("/api/jobLogs")
+        .then((data) => {
+          setIsLoadingJobLogs(false);
+          setJobLogs(data);
+        })
+        .catch((error) => {
+          openNotification("Error", error.message, "error");
+          console.error(error);
+        });
+    });
   };
 
   useEffect(loadData, []);
 
   return (
     <>
-      {/* <AddUserModal loadData={loadData} ref={AddUserModalRef} />
-      <DeleteModal
-        id={selectedJobId}
-        route={"/api/users"}
-        ref={DeleteUserModalRef}
-        loadData={loadData}
-      /> */}
       <Space direction="vertical" size="large">
-        {/* <Button
-          type="primary"
-          onClick={() => {
-            AddUserModalRef?.current?.showModal();
-          }}
-        >
-          Add new user
-        </Button> */}
         <SearchBox
           list={jobs}
           keys={[
@@ -157,7 +174,6 @@ const Jobs = () => {
                 }
               }}
             />
-
             <Column
               title="Actions"
               dataIndex="actions"
@@ -193,7 +209,13 @@ const Jobs = () => {
           {...tableSettings}
         >
           <ColumnGroup title="Job log" align="left">
-            <Column title="Schedule" dataIndex="scheduleId" />
+            <Column
+              title="Schedule"
+              render={({ scheduleId }) =>
+                schedules.filter((schedule) => schedule.id === scheduleId)[0]
+                  .name
+              }
+            />
             <Column
               title="Status"
               dataIndex="status"
@@ -224,7 +246,14 @@ const Jobs = () => {
                 );
               }}
             />
-            <Column title="Machine" dataIndex="runtimeResourceId" />
+            <Column
+              title="Machine"
+              render={({ runtimeResourceId }) =>
+                runtimeResources.filter(
+                  (runtimeResource) => runtimeResource.id === runtimeResourceId
+                )[0].friendlyName
+              }
+            />
             <Column title="Priority" dataIndex="priority" />
             <Column title="Message" dataIndex="message" />
             <Column
