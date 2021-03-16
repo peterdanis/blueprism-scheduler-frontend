@@ -27,8 +27,6 @@ const Machines = () => {
     setIsLoading(true);
     fetchApi("/api/runtimeResources")
       .then((data) => {
-        console.log(data);
-
         setIsLoading(false);
         setMachines(data);
       })

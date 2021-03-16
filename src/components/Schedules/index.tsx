@@ -49,6 +49,7 @@ const Schedules = () => {
   const [filteredSchedules, setFilteredSchedules] = useState([] as Schedule[]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedSchedule, setSelectedSchedule] = useState(0);
+  const [showingModal, setShowingModal] = useState(false);
 
   const editScheduleModalRef = useRef<{ showModal: () => void }>(null);
   // const DeleteUserModalRef = useRef<{ showModal: () => void }>(null);
@@ -59,6 +60,7 @@ const Schedules = () => {
       .then((data) => {
         setIsLoading(false);
         setSchedules(data);
+        setShowingModal(false);
       })
       .catch((error) => {
         openNotification("Error", error.message, "error");
@@ -74,6 +76,7 @@ const Schedules = () => {
         loadData={loadData}
         id={selectedSchedule}
         ref={editScheduleModalRef}
+        fetchData={showingModal}
       />
       {/* <DeleteModal
         id={selectedJobId}
@@ -135,6 +138,7 @@ const Schedules = () => {
                     icon={<EditOutlined />}
                     onClick={(e) => {
                       setSelectedSchedule(record.id!);
+                      setShowingModal(true);
                       editScheduleModalRef?.current?.showModal();
                     }}
                   />

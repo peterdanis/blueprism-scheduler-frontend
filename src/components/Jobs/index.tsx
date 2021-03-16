@@ -3,7 +3,7 @@ import Column from "antd/lib/table/Column";
 import React, { useEffect, useRef, useState } from "react";
 import fetchApi from "../../services/fetchApi";
 import { idColumnWidth, tableSettings } from "../../utils/commonSettings";
-import openNotification from "../../utils/notification";
+import notification from "../../utils/notification";
 import SearchBox from "../SearchBox";
 import { StopOutlined } from "@ant-design/icons";
 import ColumnGroup from "antd/lib/table/ColumnGroup";
@@ -25,7 +25,7 @@ type Job = {
   status: string;
 };
 
-type JobLog = Omit<Job, "schedule" | "runtimeResource"> & {
+type JobLog = Job & {
   jobId: number;
   scheduleId: number;
   runtimeResourceId: number;
@@ -52,52 +52,64 @@ const Jobs = () => {
     setIsLoadingJobLogs(true);
 
     // Get job queue
-    fetchApi("/api/jobs")
-      .then((data) => {
-        setIsLoadingJobs(false);
-        setJobs(data);
-      })
-      .catch((error) => {
-        openNotification("Error", error.message, "error");
-        console.error(error);
-      });
+    const jobsPromise = fetchApi("/api/jobs").then((data) => {
+      setIsLoadingJobs(false);
+      setJobs(data);
+    });
 
     // Get schedules
-    const schedulesPromise = fetchApi("/api/schedules")
-      .then((data) => {
-        setSchedules(data);
-      })
-      .catch((error) => {
-        openNotification("Error", error.message, "error");
-        console.error(error);
-      });
+    const schedulesPromise = fetchApi("/api/schedules").then((data) => {
+      setSchedules(data);
+    });
 
     // Get runtime resources
-    const runtimeResourcesPromise = fetchApi("/api/runtimeResources")
-      .then((data) => {
+    const runtimeResourcesPromise = fetchApi("/api/runtimeResources").then(
+      (data) => {
         setRuntimeResources(data);
-      })
-      .catch((error) => {
-        openNotification("Error", error.message, "error");
-        console.error(error);
-      });
+      }
+    );
 
     // Load schedule and runtime resource data first
-    Promise.all([schedulesPromise, runtimeResourcesPromise]).then(() => {
-      // Get job log
-      fetchApi("/api/jobLogs")
-        .then((data) => {
-          setIsLoadingJobLogs(false);
-          setJobLogs(data);
-        })
-        .catch((error) => {
-          openNotification("Error", error.message, "error");
-          console.error(error);
-        });
-    });
+    Promise.all([jobsPromise, schedulesPromise, runtimeResourcesPromise]).catch(
+      (error) => {
+        notification("Error", error.message, "error");
+        console.error(error);
+      }
+    );
   };
 
   useEffect(loadData, []);
+  useEffect(() => {
+    fetchApi("/api/jobLogs")
+      .then((data: JobLog[]) => {
+        setIsLoadingJobLogs(false);
+        const modifiedData = data.map((jobLog) => {
+          jobLog.runtimeResource = runtimeResources.filter(
+            (runtimeResource) => runtimeResource.id === jobLog.runtimeResourceId
+          )[0];
+          jobLog.schedule = schedules.filter(
+            (schedule) => schedule.id === jobLog.scheduleId
+          )[0];
+          return jobLog;
+        });
+        setJobLogs(modifiedData);
+      })
+      .catch((error) => {
+        notification("Error", error.message, "error");
+        console.error(error);
+      });
+  }, [runtimeResources, schedules]);
+
+  const getMachineName = (record: Job) => {
+    if (record.runtimeResource) {
+      return record.runtimeResource.friendlyName;
+    }
+  };
+  const getScheduleName = (record: Job) => {
+    if (record.schedule) {
+      return record.schedule.name;
+    }
+  };
 
   return (
     <>
@@ -105,8 +117,10 @@ const Jobs = () => {
         <SearchBox
           list={jobs}
           keys={[
+            "id",
             "schedule.id",
             "schedule.name",
+            "runtimeResource.id",
             "runtimeResource.friendlyName",
             "status",
           ]}
@@ -121,10 +135,7 @@ const Jobs = () => {
         >
           <ColumnGroup title="Job queue" align="left">
             <Column title="ID" dataIndex="id" width={idColumnWidth} />
-            <Column
-              title="Schedule"
-              render={(record) => record.schedule.name}
-            />
+            <Column title="Schedule" render={getScheduleName} />
             <Column
               title="Status"
               dataIndex="status"
@@ -155,10 +166,7 @@ const Jobs = () => {
                 );
               }}
             />
-            <Column
-              title="Machine"
-              render={(record) => record.runtimeResource.friendlyName}
-            />
+            <Column title="Machine" render={getMachineName} />
             <Column title="Priority" dataIndex="priority" />
             <Column
               title="Add time"
@@ -198,8 +206,15 @@ const Jobs = () => {
         </Table>
         <SearchBox
           list={jobLogs}
-          keys={["jobId", "status"]}
-          placeholder="Search by job ID, status"
+          keys={[
+            "jobId",
+            "schedule.id",
+            "schedule.name",
+            "runtimeResource.id",
+            "runtimeResource.friendlyName",
+            "status",
+          ]}
+          placeholder="Search by job ID, schedule, machine, status..."
           resultsSetter={setFilteredJobLogs}
         />
         <Table
@@ -209,13 +224,15 @@ const Jobs = () => {
           {...tableSettings}
         >
           <ColumnGroup title="Job log" align="left">
-            <Column
+            <Column title="ID" dataIndex="jobId" width={idColumnWidth} />
+            {/* <Column
               title="Schedule"
               render={({ scheduleId }) =>
                 schedules.filter((schedule) => schedule.id === scheduleId)[0]
                   .name
               }
-            />
+            /> */}
+            <Column title="Schedule" render={getScheduleName} />
             <Column
               title="Status"
               dataIndex="status"
@@ -246,14 +263,7 @@ const Jobs = () => {
                 );
               }}
             />
-            <Column
-              title="Machine"
-              render={({ runtimeResourceId }) =>
-                runtimeResources.filter(
-                  (runtimeResource) => runtimeResource.id === runtimeResourceId
-                )[0].friendlyName
-              }
-            />
+            <Column title="Machine" render={getMachineName} />
             <Column title="Priority" dataIndex="priority" />
             <Column title="Message" dataIndex="message" />
             <Column
