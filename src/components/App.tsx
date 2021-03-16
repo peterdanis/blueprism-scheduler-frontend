@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from "react";
-import { Layout } from "antd";
 import "antd/dist/antd.css";
-import { Navbar } from "./Navbar";
 import { GlobalState } from "./GlobalState";
+import { Layout } from "antd";
+import { Navbar } from "./Navbar";
 import Jobs from "./Jobs";
-import Schedules from "./Schedules";
-import Tasks from "./Tasks";
 import Logs from "./Logs";
 import Machines from "./Machines";
-import Users from "./Users";
+import React, { useEffect, useState } from "react";
+import Schedules from "./Schedules";
 import Settings from "./Settings";
+import Tasks from "./Tasks";
+import Users from "./Users";
 
 const { Header, Content } = Layout;
 

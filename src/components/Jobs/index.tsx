@@ -92,7 +92,7 @@ const Jobs = () => {
           )[0];
           return jobLog;
         });
-        setJobLogs(modifiedData);
+        setJobLogs(modifiedData.reverse());
       })
       .catch((error) => {
         notification("Error", error.message, "error");

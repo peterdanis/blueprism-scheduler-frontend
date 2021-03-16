@@ -1,4 +1,4 @@
-export const idColumnWidth = "35px";
+export const idColumnWidth = "45px";
 export const tableSettings = {
   sticky: true,
   bordered: true,
