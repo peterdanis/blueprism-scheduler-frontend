@@ -5,6 +5,7 @@ import fetchApi from "../../services/fetchApi";
 import { FieldData } from "rc-field-form/lib/interface";
 import notification from "../../utils/notification";
 import { formSettings } from "../../utils/commonSettings";
+import getFormValue from "../../utils/getFormValue";
 
 type Props = {
   loadData: () => void;
@@ -13,19 +14,15 @@ type Props = {
 const AddUserModal = forwardRef((props: Props, ref) => {
   const [formData, setFormData] = useState([] as FieldData[]);
 
-  const getFormValue = (fieldName: string) =>
-    formData.filter((item) => {
-      const a = item.name as string[];
-      return a[0] === fieldName;
-    })[0]?.value;
+  const getValue = getFormValue(formData);
 
   const onOkHandler = async () => {
-    if (getFormValue("password") !== getFormValue("confirmPassword")) {
+    if (getValue("password") !== getValue("confirmPassword")) {
       throw new Error("Passwords do not match!");
     }
     const data = {
-      name: getFormValue("username"),
-      password: getFormValue("password"),
+      name: getValue("username"),
+      password: getValue("password"),
     };
     const result = await fetchApi("/api/users", "POST", data);
     setFormData([]);
@@ -85,7 +82,7 @@ const AddUserModal = forwardRef((props: Props, ref) => {
           name="confirmPassword"
           rules={[
             {
-              required: getFormValue("password") || false,
+              required: getValue("password") || false,
               message: "The two passwords that you entered do not match!",
             },
             ({ getFieldValue }) => ({

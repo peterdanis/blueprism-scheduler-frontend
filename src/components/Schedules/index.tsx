@@ -11,14 +11,18 @@ import {
   CaretRightOutlined,
 } from "@ant-design/icons";
 import EditScheduleModal from "./EditScheduleModal";
-import { Schedule } from "../../utils/types";
+import { RuntimeResource, Schedule, Task } from "../../utils/types";
 
 const Schedules = () => {
   const [schedules, setSchedules] = useState([] as Schedule[]);
+  const [machines, setMachines] = useState([] as RuntimeResource[]);
+  const [tasks, setTasks] = useState([] as Task[]);
+
   const [filteredSchedules, setFilteredSchedules] = useState([] as Schedule[]);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedSchedule, setSelectedSchedule] = useState(0);
-  const [showingModal, setShowingModal] = useState(false);
+  const [selectedSchedule, setSelectedSchedule] = useState(
+    (undefined as unknown) as Schedule
+  );
 
   const editScheduleModalRef = useRef<{ showModal: () => void }>(null);
   // const DeleteUserModalRef = useRef<{ showModal: () => void }>(null);
@@ -29,7 +33,6 @@ const Schedules = () => {
       .then((data) => {
         setIsLoading(false);
         setSchedules(data);
-        setShowingModal(false);
       })
       .catch((error) => {
         openNotification("Error", error.message, "error");
@@ -37,15 +40,19 @@ const Schedules = () => {
       });
   };
 
+  const findSchedule = (id: number): Schedule =>
+    schedules.filter((_schedule) => _schedule.id === id)[0];
+
   useEffect(loadData, []);
 
   return (
     <>
       <EditScheduleModal
         loadData={loadData}
-        id={selectedSchedule}
+        schedule={selectedSchedule}
+        machines={machines}
+        tasks={tasks}
         ref={editScheduleModalRef}
-        fetchData={showingModal}
       />
       {/* <DeleteModal
         id={selectedJobId}
@@ -95,7 +102,7 @@ const Schedules = () => {
                     type={"primary"}
                     icon={<CaretRightOutlined />}
                     onClick={(e) => {
-                      setSelectedSchedule(record.id!);
+                      setSelectedSchedule(findSchedule(record.id!));
                       // DeleteUserModalRef?.current?.showModal();
                     }}
                   >
@@ -106,8 +113,9 @@ const Schedules = () => {
                     type={"primary"}
                     icon={<EditOutlined />}
                     onClick={(e) => {
-                      setSelectedSchedule(record.id!);
-                      setShowingModal(true);
+                      setSelectedSchedule(findSchedule(record.id!));
+                      console.log(editScheduleModalRef);
+                      console.log(editScheduleModalRef.current);
                       editScheduleModalRef?.current?.showModal();
                     }}
                   />
@@ -117,7 +125,7 @@ const Schedules = () => {
                     type={"primary"}
                     icon={<DeleteOutlined />}
                     onClick={(e) => {
-                      setSelectedSchedule(record.id!);
+                      setSelectedSchedule(findSchedule(record.id!));
                       // DeleteUserModalRef?.current?.showModal();
                     }}
                   />
