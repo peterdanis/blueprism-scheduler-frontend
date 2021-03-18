@@ -51,7 +51,7 @@ const Machines = () => {
             AddMachineModalRef?.current?.showModal();
           }}
         >
-          Add new user
+          Add new machine
         </Button>
         <SearchBox
           list={machines}

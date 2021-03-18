@@ -4,3 +4,7 @@ export const tableSettings = {
   bordered: true,
   size: "small" as "small" | "middle" | "large",
 };
+export const formSettings = {
+  labelCol: { span: 8 },
+  wrapperCol: { span: 16 },
+};

@@ -4,6 +4,7 @@ import { Form, Input } from "antd";
 import fetchApi from "../../services/fetchApi";
 import { FieldData } from "rc-field-form/lib/interface";
 import notification from "../../utils/notification";
+import { formSettings } from "../../utils/commonSettings";
 
 type Props = {
   loadData: () => void;
@@ -52,12 +53,11 @@ const AddUserModal = forwardRef((props: Props, ref) => {
       <h3>Add new user</h3>
       <br />
       <Form
-        labelCol={{ span: 8 }}
-        wrapperCol={{ span: 16 }}
         fields={formData}
         onFieldsChange={(_, fields) => {
           setFormData(fields);
         }}
+        {...formSettings}
       >
         <Form.Item
           label="Username"

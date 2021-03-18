@@ -18,6 +18,12 @@ type Steps = {
   };
 };
 
+type Input = {
+  "@name": string;
+  "@value": string;
+  "@type": "text";
+};
+
 type JobBase = {
   id?: number;
   addTime: Date;
@@ -94,4 +100,14 @@ export type User = {
   admin?: boolean;
   name: string;
   password?: string;
+};
+
+export type Task = {
+  id?: number;
+  inputs?: Input[];
+  hardTimeout?: number;
+  name: string;
+  process: string;
+  scheduleTask?: ScheduleTask[];
+  softTimeout?: number;
 };

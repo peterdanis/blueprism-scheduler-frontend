@@ -4,7 +4,7 @@ import { Form, Input } from "antd";
 import fetchApi from "../../services/fetchApi";
 import { FieldData } from "rc-field-form/lib/interface";
 import notification from "../../utils/notification";
-import { Schedule } from ".";
+import { Schedule } from "../../utils/types";
 
 type Props = {
   loadData: () => void;
