@@ -11,38 +11,7 @@ import {
   CaretRightOutlined,
 } from "@ant-design/icons";
 import EditScheduleModal from "./EditScheduleModal";
-
-type ScheduleTask = {};
-
-type OnError = {
-  action: "email";
-  emailTo?: string;
-  emailCc?: string;
-};
-
-export type Schedule = {
-  id?: number;
-  force?: boolean;
-  name: string;
-  hardForceTime?: number;
-  hardTimeout?: number;
-  onError?: OnError;
-  priority?: number;
-  rule: string;
-  softForceTime?: number;
-  softTimeout?: number;
-  validFrom: Date;
-  validUntil?: Date;
-  waitTime?: number;
-  scheduleTask?: ScheduleTask[];
-  runtimeResource?: RuntimeResource;
-  runtimeResourceId: number;
-};
-
-type RuntimeResource = {
-  id: number;
-  friendlyName: string;
-};
+import { Schedule } from "../../utils/types";
 
 const Schedules = () => {
   const [schedules, setSchedules] = useState([] as Schedule[]);
@@ -101,7 +70,7 @@ const Schedules = () => {
         />
         <Table
           dataSource={filteredSchedules}
-          rowKey={(record: any) => record.id}
+          rowKey={(record) => record.id!}
           loading={isLoading}
           {...tableSettings}
         >

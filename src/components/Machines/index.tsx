@@ -1,4 +1,4 @@
-import { Button, Space, Table, Tag } from "antd";
+import { Button, Space, Table } from "antd";
 import Column from "antd/lib/table/Column";
 import React, { useEffect, useRef, useState } from "react";
 import fetchApi from "../../services/fetchApi";
@@ -6,11 +6,8 @@ import { idColumnWidth, tableSettings } from "../../utils/commonSettings";
 import openNotification from "../../utils/notification";
 import SearchBox from "../SearchBox";
 import { EditOutlined } from "@ant-design/icons";
-
-type RuntimeResource = {
-  id: number;
-  friendlyName: string;
-};
+import AddMachineModal from "./AddMachineModal";
+import { RuntimeResource } from "../../utils/types";
 
 const Machines = () => {
   const [machines, setMachines] = useState([] as RuntimeResource[]);
@@ -20,7 +17,7 @@ const Machines = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedMachine, setSelectedMachine] = useState(0);
 
-  // const AddUserModalRef = useRef<{ showModal: () => void }>(null);
+  const AddMachineModalRef = useRef<{ showModal: () => void }>(null);
   // const DeleteUserModalRef = useRef<{ showModal: () => void }>(null);
 
   const loadData = () => {
@@ -40,22 +37,22 @@ const Machines = () => {
 
   return (
     <>
-      {/* <AddUserModal loadData={loadData} ref={AddUserModalRef} />
-      <DeleteModal
+      <AddMachineModal loadData={loadData} ref={AddMachineModalRef} />
+      {/* <DeleteModal
         id={selectedJobId}
         route={"/api/users"}
         ref={DeleteUserModalRef}
         loadData={loadData}
       /> */}
       <Space direction="vertical" size="large">
-        {/* <Button
+        <Button
           type="primary"
           onClick={() => {
-            AddUserModalRef?.current?.showModal();
+            AddMachineModalRef?.current?.showModal();
           }}
         >
           Add new user
-        </Button> */}
+        </Button>
         <SearchBox
           list={machines}
           keys={["id", "friendlyName", "hostname"]}
@@ -64,7 +61,7 @@ const Machines = () => {
         />
         <Table
           dataSource={filteredMachines}
-          rowKey={(record: any) => record.id}
+          rowKey={(record) => record.id!}
           loading={isLoading}
           {...tableSettings}
         >
@@ -86,7 +83,7 @@ const Machines = () => {
                     type={"primary"}
                     icon={<EditOutlined />}
                     onClick={(e) => {
-                      setSelectedMachine(record.id);
+                      setSelectedMachine(record.id!);
                       // DeleteUserModalRef?.current?.showModal();
                     }}
                   />

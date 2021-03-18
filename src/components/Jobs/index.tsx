@@ -7,28 +7,11 @@ import notification from "../../utils/notification";
 import SearchBox from "../SearchBox";
 import { StopOutlined } from "@ant-design/icons";
 import ColumnGroup from "antd/lib/table/ColumnGroup";
+import { Job, JobLog, RuntimeResource, Schedule } from "../../utils/types";
 
-type Schedule = {
-  id: number;
-  name: string;
-};
-
-type RuntimeResource = {
-  id: number;
-  friendlyName: string;
-};
-
-type Job = {
-  id: number;
-  schedule: Schedule;
+type modifiedJobLog = JobLog & {
   runtimeResource: RuntimeResource;
-  status: string;
-};
-
-type JobLog = Job & {
-  jobId: number;
-  scheduleId: number;
-  runtimeResourceId: number;
+  schedule: Schedule;
 };
 
 const Jobs = () => {
@@ -81,7 +64,7 @@ const Jobs = () => {
   useEffect(loadData, []);
   useEffect(() => {
     fetchApi("/api/jobLogs")
-      .then((data: JobLog[]) => {
+      .then((data: modifiedJobLog[]) => {
         setIsLoadingJobLogs(false);
         const modifiedData = data.map((jobLog) => {
           jobLog.runtimeResource = runtimeResources.filter(
@@ -129,7 +112,7 @@ const Jobs = () => {
         />
         <Table
           dataSource={filteredJobs}
-          rowKey={(record: any) => record.id}
+          rowKey={(record) => record.id!}
           loading={isLoadingJobs}
           {...tableSettings}
         >
@@ -194,7 +177,7 @@ const Jobs = () => {
                       danger
                       icon={<StopOutlined />}
                       onClick={(e) => {
-                        setSelectedJobId(record.id);
+                        setSelectedJobId(record.id!);
                         // DeleteUserModalRef?.current?.showModal();
                       }}
                     />

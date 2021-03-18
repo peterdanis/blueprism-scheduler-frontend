@@ -8,11 +8,7 @@ import AddUserModal from "./AddUserModal";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import DeleteModal from "../DeleteModal";
 import { idColumnWidth, tableSettings } from "../../utils/commonSettings";
-
-type User = {
-  id: number;
-  name: string;
-};
+import { User } from "../../utils/types";
 
 const Users = () => {
   const [users, setUsers] = useState([] as User[]);
@@ -74,7 +70,7 @@ const Users = () => {
         />
         <Table
           dataSource={filteredUsers}
-          rowKey={(record: any) => record.id}
+          rowKey={(record) => record.id!}
           loading={isLoading}
           {...tableSettings}
         >
@@ -93,7 +89,7 @@ const Users = () => {
                     type={"primary"}
                     icon={<EditOutlined />}
                     onClick={(e) => {
-                      setSelectedUser(record.id);
+                      setSelectedUser(record.id!);
                       // DeleteUserModalRef?.current?.showModal();
                     }}
                   />
@@ -103,7 +99,7 @@ const Users = () => {
                     type={"primary"}
                     icon={<DeleteOutlined />}
                     onClick={(e) => {
-                      setSelectedUser(record.id);
+                      setSelectedUser(record.id!);
                       DeleteUserModalRef?.current?.showModal();
                     }}
                   />
