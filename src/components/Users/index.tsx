@@ -2,13 +2,13 @@ import { Button, Space, Table } from "antd";
 import Column from "antd/lib/table/Column";
 import React, { useEffect, useRef, useState } from "react";
 import fetchApi from "../../services/fetchApi";
-import openNotification from "../../utils/notification";
 import SearchBox from "../SearchBox";
 import AddUserModal from "./AddUserModal";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import DeleteModal from "../DeleteModal";
 import { idColumnWidth, tableSettings } from "../../utils/commonSettings";
 import { User } from "../../utils/types";
+import catchAndNotify from "../../utils/catchAndNotify";
 
 const Users = () => {
   const [users, setUsers] = useState([] as User[]);
@@ -36,10 +36,7 @@ const Users = () => {
           })
         );
       })
-      .catch((error) => {
-        openNotification("Error", error.message, "error");
-        console.error(error);
-      });
+      .catch(catchAndNotify);
   };
 
   useEffect(loadData, []);

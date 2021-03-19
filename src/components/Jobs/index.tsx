@@ -3,11 +3,11 @@ import Column from "antd/lib/table/Column";
 import React, { useEffect, useRef, useState } from "react";
 import fetchApi from "../../services/fetchApi";
 import { idColumnWidth, tableSettings } from "../../utils/commonSettings";
-import notification from "../../utils/notification";
 import SearchBox from "../SearchBox";
 import { StopOutlined } from "@ant-design/icons";
 import ColumnGroup from "antd/lib/table/ColumnGroup";
 import { Job, JobLog, RuntimeResource, Schedule } from "../../utils/types";
+import catchAndNotify from "../../utils/catchAndNotify";
 
 type modifiedJobLog = JobLog & {
   runtimeResource: RuntimeResource;
@@ -30,15 +30,20 @@ const Jobs = () => {
   // const AddUserModalRef = useRef<{ showModal: () => void }>(null);
   // const DeleteUserModalRef = useRef<{ showModal: () => void }>(null);
 
-  const loadData = () => {
+  const loadJobs = () => {
     setIsLoadingJobs(true);
-    setIsLoadingJobLogs(true);
+    fetchApi("/api/jobs")
+      .then((data) => {
+        setIsLoadingJobs(false);
+        setJobs(data);
+      })
+      .catch(catchAndNotify);
+  };
 
-    // Get job queue
-    const jobsPromise = fetchApi("/api/jobs").then((data) => {
-      setIsLoadingJobs(false);
-      setJobs(data);
-    });
+  const loadData = () => {
+    setIsLoadingJobLogs(true);
+    loadJobs();
+    const interval = setInterval(loadJobs, 10000);
 
     // Get schedules
     const schedulesPromise = fetchApi("/api/schedules").then((data) => {
@@ -53,16 +58,16 @@ const Jobs = () => {
     );
 
     // Load schedule and runtime resource data first
-    Promise.all([jobsPromise, schedulesPromise, runtimeResourcesPromise]).catch(
-      (error) => {
-        notification("Error", error.message, "error");
-        console.error(error);
-      }
+    Promise.all([schedulesPromise, runtimeResourcesPromise]).catch(
+      catchAndNotify
     );
+
+    return () => clearInterval(interval);
   };
 
   useEffect(loadData, []);
   useEffect(() => {
+    setIsLoadingJobLogs(true);
     fetchApi("/api/jobLogs")
       .then((data: modifiedJobLog[]) => {
         setIsLoadingJobLogs(false);
@@ -77,10 +82,7 @@ const Jobs = () => {
         });
         setJobLogs(modifiedData.reverse());
       })
-      .catch((error) => {
-        notification("Error", error.message, "error");
-        console.error(error);
-      });
+      .catch(catchAndNotify);
   }, [runtimeResources, schedules]);
 
   const getMachineName = (record: Job) => {

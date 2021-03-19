@@ -3,11 +3,11 @@ import Column from "antd/lib/table/Column";
 import React, { useEffect, useRef, useState } from "react";
 import fetchApi from "../../services/fetchApi";
 import { idColumnWidth, tableSettings } from "../../utils/commonSettings";
-import openNotification from "../../utils/notification";
 import SearchBox from "../SearchBox";
 import { EditOutlined } from "@ant-design/icons";
 import AddMachineModal from "./AddMachineModal";
 import { RuntimeResource } from "../../utils/types";
+import catchAndNotify from "../../utils/catchAndNotify";
 
 const Machines = () => {
   const [machines, setMachines] = useState([] as RuntimeResource[]);
@@ -27,10 +27,7 @@ const Machines = () => {
         setIsLoading(false);
         setMachines(data);
       })
-      .catch((error) => {
-        openNotification("Error", error.message, "error");
-        console.error(error);
-      });
+      .catch(catchAndNotify);
   };
 
   useEffect(loadData, []);

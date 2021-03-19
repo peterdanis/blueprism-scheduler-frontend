@@ -1,6 +1,7 @@
 import notification from "../utils/notification";
 import { Button, Modal } from "antd";
 import React, { forwardRef, useImperativeHandle, useState } from "react";
+import catchAndNotify from "../utils/catchAndNotify";
 
 type Props = {
   children?: React.ReactNode | React.ReactNode[];
@@ -31,8 +32,7 @@ const CustomModal = forwardRef((props: Props, ref) => {
         await props.okFn();
       }
     } catch (error) {
-      notification("Error", error.message, "error");
-      console.error(error);
+      catchAndNotify(error);
     } finally {
       setIsOkLoading(false);
       setIsModalVisible(false);
@@ -46,8 +46,7 @@ const CustomModal = forwardRef((props: Props, ref) => {
         await props.cancelFn();
       }
     } catch (error) {
-      notification("Error", error.message, "error");
-      console.error(error);
+      catchAndNotify(error);
     } finally {
       setIsCancelLoading(false);
       setIsModalVisible(false);
