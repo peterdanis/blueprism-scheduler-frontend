@@ -27,7 +27,7 @@ const DeleteModal = forwardRef(({ id, route, loadData }: Props, ref) => {
       ref={ref}
       danger={true}
     >
-      <h3>Delete</h3>
+      <h3>Confirm deleting</h3>
     </CustomModal>
   );
 });
