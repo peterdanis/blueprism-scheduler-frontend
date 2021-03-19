@@ -114,9 +114,9 @@ const Schedules = () => {
                     icon={<EditOutlined />}
                     onClick={(e) => {
                       setSelectedSchedule(findSchedule(record.id!));
-                      console.log(editScheduleModalRef);
-                      console.log(editScheduleModalRef.current);
-                      editScheduleModalRef?.current?.showModal();
+                      setTimeout(() => {
+                        editScheduleModalRef?.current?.showModal();
+                      }, 0);
                     }}
                   />
                   <Button
