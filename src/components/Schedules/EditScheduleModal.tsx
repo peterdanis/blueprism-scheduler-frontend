@@ -6,6 +6,7 @@ import { FieldData } from "rc-field-form/lib/interface";
 import notification from "../../utils/notification";
 import { RuntimeResource, Schedule, Task } from "../../utils/types";
 import getFormValue from "../../utils/getFormValue";
+import { formSettings } from "../../utils/commonSettings";
 
 type Props = {
   loadData: () => void;
@@ -59,13 +60,12 @@ const EditScheduleModal = forwardRef(({ loadData, schedule }: Props, ref) => {
         <h3>Edit schedule</h3>
         <br />
         <Form
-          labelCol={{ span: 8 }}
-          wrapperCol={{ span: 16 }}
           fields={formData}
           onFieldsChange={(_, fields) => {
             setFormData(fields);
           }}
           initialValues={schedule}
+          {...formSettings}
         >
           <Form.Item
             label="Name"
