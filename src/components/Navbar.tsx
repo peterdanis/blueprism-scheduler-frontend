@@ -37,13 +37,6 @@ type Props = { onSelect: (e: SelectInfo) => void };
 export const Navbar = (props: Props) => {
   return (
     <>
-      <Button
-        danger
-        type={"primary"}
-        style={{ right: "16px", marginTop: "16px", position: "fixed" }}
-      >
-        Logout
-      </Button>
       <Menu
         theme="dark"
         mode="horizontal"
@@ -52,6 +45,13 @@ export const Navbar = (props: Props) => {
       >
         <>{MenuItems}</>
       </Menu>
+      <Button
+        danger
+        type={"primary"}
+        style={{ right: "16px", marginTop: "-48px", position: "absolute" }}
+      >
+        Logout
+      </Button>
     </>
   );
 };
