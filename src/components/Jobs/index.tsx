@@ -16,6 +16,7 @@ type modifiedJobLog = JobLog & {
 
 const Jobs = () => {
   const [jobs, setJobs] = useState([] as Job[]);
+  const [jobIds, setJobsIds] = useState("");
   const [jobLogs, setJobLogs] = useState([] as JobLog[]);
   const [filteredJobs, setFilteredJobs] = useState([] as Job[]);
   const [filteredJobLogs, setFilteredJobLogs] = useState([] as JobLog[]);
@@ -33,14 +34,34 @@ const Jobs = () => {
   const loadJobs = () => {
     setIsLoadingJobs(true);
     fetchApi("/api/jobs")
-      .then((data) => {
-        setIsLoadingJobs(false);
+      .then((data: Job[]) => {
         setJobs(data);
+        setIsLoadingJobs(false);
+        setJobsIds(data.reduce((acc, value) => `${acc};${value.id}`, ""));
       })
       .catch(catchAndNotify);
   };
 
-  const loadData = () => {
+  const loadJobLogs = () => {
+    setIsLoadingJobLogs(true);
+    fetchApi("/api/jobLogs")
+      .then((data: modifiedJobLog[]) => {
+        const modifiedData = data.map((jobLog) => {
+          jobLog.runtimeResource = runtimeResources.filter(
+            (runtimeResource) => runtimeResource.id === jobLog.runtimeResourceId
+          )[0];
+          jobLog.schedule = schedules.filter(
+            (schedule) => schedule.id === jobLog.scheduleId
+          )[0];
+          return jobLog;
+        });
+        setJobLogs(modifiedData.reverse());
+        setIsLoadingJobLogs(false);
+      })
+      .catch(catchAndNotify);
+  };
+
+  const loadMiscData = () => {
     setIsLoadingJobLogs(true);
     loadJobs();
     const interval = setInterval(loadJobs, 10000);
@@ -65,25 +86,8 @@ const Jobs = () => {
     return () => clearInterval(interval);
   };
 
-  useEffect(loadData, []);
-  useEffect(() => {
-    setIsLoadingJobLogs(true);
-    fetchApi("/api/jobLogs")
-      .then((data: modifiedJobLog[]) => {
-        setIsLoadingJobLogs(false);
-        const modifiedData = data.map((jobLog) => {
-          jobLog.runtimeResource = runtimeResources.filter(
-            (runtimeResource) => runtimeResource.id === jobLog.runtimeResourceId
-          )[0];
-          jobLog.schedule = schedules.filter(
-            (schedule) => schedule.id === jobLog.scheduleId
-          )[0];
-          return jobLog;
-        });
-        setJobLogs(modifiedData.reverse());
-      })
-      .catch(catchAndNotify);
-  }, [runtimeResources, schedules]);
+  useEffect(loadMiscData, [jobIds]);
+  useEffect(loadJobLogs, [runtimeResources, schedules, jobIds]);
 
   const getMachineName = (record: Job) => {
     if (record.runtimeResource) {
