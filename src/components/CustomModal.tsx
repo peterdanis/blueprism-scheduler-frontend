@@ -12,6 +12,7 @@ type Props = {
   title?: string;
   okButtonDisabled?: boolean;
   danger?: boolean;
+  width?: number;
 };
 
 const CustomModal = forwardRef((props: Props, ref) => {
@@ -61,6 +62,7 @@ const CustomModal = forwardRef((props: Props, ref) => {
       onOk={handleOk}
       onCancel={handleCancel}
       closable={false}
+      width={props.width}
       footer={[
         <Button
           key="back"

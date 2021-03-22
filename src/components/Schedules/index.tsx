@@ -29,12 +29,21 @@ const Schedules = () => {
 
   const loadData = () => {
     setIsLoading(true);
-    fetchApi("/api/schedules")
-      .then((data) => {
-        setIsLoading(false);
-        setSchedules(data);
-      })
-      .catch(catchAndNotify);
+
+    const runtimeResourcesPromise = fetchApi("/api/runtimeResources").then(
+      (data) => {
+        setMachines(data);
+      }
+    );
+
+    const schedulesPromise = fetchApi("/api/schedules").then((data) => {
+      setSchedules(data);
+      setIsLoading(false);
+    });
+
+    Promise.all([schedulesPromise, runtimeResourcesPromise]).catch(
+      catchAndNotify
+    );
   };
 
   const findSchedule = (id: number): Schedule =>

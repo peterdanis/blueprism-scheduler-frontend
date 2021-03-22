@@ -25,7 +25,6 @@ const AddScheduleModal = forwardRef((props: Props, ref) => {
       name: getFormValue("name"),
       rule: getFormValue("rule"),
       validFrom: new Date("2020-12-31"),
-      runtimeResourceId: 1,
     };
     const result = await fetchApi("/api/schedules", "POST", data);
     setFormData([]);

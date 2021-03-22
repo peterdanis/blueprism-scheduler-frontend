@@ -65,7 +65,6 @@ export type Schedule = {
   waitTime?: number;
   scheduleTask?: ScheduleTask[];
   runtimeResource?: RuntimeResource;
-  runtimeResourceId: number;
 };
 
 export type RuntimeResource = {
