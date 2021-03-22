@@ -37,7 +37,9 @@ const Jobs = () => {
       .then((data: Job[]) => {
         setJobs(data);
         setIsLoadingJobs(false);
-        setJobsIds(data.reduce((acc, value) => `${acc};${value.id}`, ""));
+        if (data) {
+          setJobsIds(data.reduce((acc, value) => `${acc};${value.id}`, ""));
+        }
       })
       .catch(catchAndNotify);
   };
@@ -159,9 +161,11 @@ const Jobs = () => {
             <Column title="Priority" dataIndex="priority" />
             <Column
               title="Add time"
-              render={(record) =>
-                record.addTime.replace("T", " ").replace(".000", "")
-              }
+              render={(record) => {
+                if (record.addTime) {
+                  return record.addTime.replace("T", " ").replace(".000", "");
+                }
+              }}
             />
             <Column
               title="Start time"
@@ -257,21 +261,27 @@ const Jobs = () => {
             <Column title="Message" dataIndex="message" />
             <Column
               title="Add time"
-              render={(record) =>
-                record.addTime.replace("T", " ").replace(".000", "")
-              }
+              render={(record) => {
+                if (record.addTime) {
+                  return record.addTime.replace("T", " ").replace(".000", "");
+                }
+              }}
             />
             <Column
               title="Start time"
-              render={(record) =>
-                record.startTime.replace("T", " ").replace(".000", "")
-              }
+              render={(record) => {
+                if (record.startTime) {
+                  return record.startTime.replace("T", " ").replace(".000", "");
+                }
+              }}
             />
             <Column
               title="End time"
-              render={(record) =>
-                record.endTime.replace("T", " ").replace(".000", "")
-              }
+              render={(record) => {
+                if (record.endTime) {
+                  return record.endTime.replace("T", " ").replace(".000", "");
+                }
+              }}
             />
           </ColumnGroup>
         </Table>
