@@ -2,7 +2,7 @@ import { notification } from "antd";
 
 const openNotification = (
   title: string,
-  message?: string,
+  message?: string | React.ReactNode,
   kind: "info" | "warning" | "error" | "success" = "info",
   duration: number = 0
 ) => {
