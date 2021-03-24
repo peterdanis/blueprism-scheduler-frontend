@@ -4,11 +4,12 @@ import React, { useEffect, useRef, useState } from "react";
 import fetchApi from "../../services/fetchApi";
 import SearchBox from "../SearchBox";
 import AddUserModal from "./AddUserModal";
-import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined, KeyOutlined } from "@ant-design/icons";
 import DeleteModal from "../DeleteModal";
 import { idColumnWidth, tableSettings } from "../../utils/commonSettings";
 import { User } from "../../utils/types";
 import catchAndNotify from "../../utils/catchAndNotify";
+import GenerateApiKeyModal from "./GenerateApiKeyModal";
 
 const Users = () => {
   const [users, setUsers] = useState([] as User[]);
@@ -18,6 +19,7 @@ const Users = () => {
 
   const AddUserModalRef = useRef<{ showModal: () => void }>(null);
   const DeleteUserModalRef = useRef<{ showModal: () => void }>(null);
+  const GenerateApiKeyModalRef = useRef<{ showModal: () => void }>(null);
 
   const loadData = () => {
     setIsLoading(true);
@@ -44,6 +46,11 @@ const Users = () => {
   return (
     <>
       <AddUserModal loadData={loadData} ref={AddUserModalRef} />
+      <GenerateApiKeyModal
+        id={selectedUser}
+        loadData={loadData}
+        ref={GenerateApiKeyModalRef}
+      />
       <DeleteModal
         id={selectedUser}
         route={"/api/users"}
@@ -90,6 +97,17 @@ const Users = () => {
                       // DeleteUserModalRef?.current?.showModal();
                     }}
                   />
+                  <Button
+                    size="small"
+                    type={"primary"}
+                    icon={<KeyOutlined />}
+                    onClick={(e) => {
+                      setSelectedUser(record.id!);
+                      GenerateApiKeyModalRef?.current?.showModal();
+                    }}
+                  >
+                    Generate
+                  </Button>
                   <Button
                     size="small"
                     danger
