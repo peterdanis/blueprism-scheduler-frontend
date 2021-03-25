@@ -41,7 +41,14 @@ type JobBase = {
   updateTime?: Date;
 };
 
-export type ScheduleTask = {};
+export type ScheduleTask = {
+  abortEarly?: boolean;
+  delayAfter?: number;
+  onError?: OnError;
+  step: number;
+  schedule: Schedule;
+  task: Task;
+};
 
 export type OnError = {
   action: "email";
