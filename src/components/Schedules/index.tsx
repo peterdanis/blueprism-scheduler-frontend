@@ -12,6 +12,7 @@ import {
 import EditScheduleModal from "./EditScheduleModal";
 import { RuntimeResource, Schedule, Task } from "../../utils/types";
 import catchAndNotify from "../../utils/catchAndNotify";
+import AddScheduleModal from "./AddScheduleModal";
 
 const Schedules = () => {
   const [schedules, setSchedules] = useState([] as Schedule[]);
@@ -25,6 +26,7 @@ const Schedules = () => {
   );
 
   const editScheduleModalRef = useRef<{ showModal: () => void }>(null);
+  const addScheduleModalRef = useRef<{ showModal: () => void }>(null);
   // const DeleteUserModalRef = useRef<{ showModal: () => void }>(null);
 
   const loadData = () => {
@@ -36,14 +38,20 @@ const Schedules = () => {
       }
     );
 
+    const tasksPromise = fetchApi("/api/tasks").then((data) => {
+      setTasks(data);
+    });
+
     const schedulesPromise = fetchApi("/api/schedules").then((data) => {
       setSchedules(data);
       setIsLoading(false);
     });
 
-    Promise.all([schedulesPromise, runtimeResourcesPromise]).catch(
-      catchAndNotify
-    );
+    Promise.all([
+      schedulesPromise,
+      runtimeResourcesPromise,
+      tasksPromise,
+    ]).catch(catchAndNotify);
   };
 
   const findSchedule = (id: number): Schedule =>
@@ -60,6 +68,12 @@ const Schedules = () => {
         tasks={tasks}
         ref={editScheduleModalRef}
       />
+      <AddScheduleModal
+        loadData={loadData}
+        machines={machines}
+        tasks={tasks}
+        ref={addScheduleModalRef}
+      />
       {/* <DeleteModal
         id={selectedJobId}
         route={"/api/users"}
@@ -70,7 +84,7 @@ const Schedules = () => {
         <Button
           type="primary"
           onClick={() => {
-            // AddUserModalRef?.current?.showModal();
+            addScheduleModalRef?.current?.showModal();
           }}
         >
           Add new schedule
@@ -120,9 +134,7 @@ const Schedules = () => {
                     icon={<EditOutlined />}
                     onClick={(e) => {
                       setSelectedSchedule(findSchedule(record.id!));
-                      setTimeout(() => {
-                        editScheduleModalRef?.current?.showModal();
-                      }, 0);
+                      editScheduleModalRef?.current?.showModal();
                     }}
                   />
                   <Button

@@ -1,109 +1,161 @@
-import React, { forwardRef, useState } from "react";
+import React, { forwardRef, useEffect, useState } from "react";
 import CustomModal from "../CustomModal";
-import { Form, Input } from "antd";
+import { Form, Input, Select } from "antd";
 import fetchApi from "../../services/fetchApi";
 import { FieldData } from "rc-field-form/lib/interface";
 import notification from "../../utils/notification";
+import { RuntimeResource, Schedule, Task } from "../../utils/types";
+import getFormValue from "../../utils/getFormValue";
 import { formSettings } from "../../utils/commonSettings";
-import { Schedule } from "../../utils/types";
+import cronstrue from "cronstrue";
+import { parseExpression } from "cron-parser";
 
 type Props = {
   loadData: () => void;
+  machines: RuntimeResource[];
+  tasks: Task[];
 };
 
-const AddScheduleModal = forwardRef((props: Props, ref) => {
-  const [formData, setFormData] = useState([] as FieldData[]);
+const AddScheduleModal = forwardRef(
+  ({ loadData, machines, tasks }: Props, ref) => {
+    const [formData, setFormData] = useState([] as FieldData[]);
+    const [readableRule, setReadableRule] = useState("");
+    const [nextIterations, setNextIterations] = useState([] as string[]);
 
-  const getFormValue = (fieldName: string) =>
-    formData.filter((item) => {
-      const a = item.name as string[];
-      return a[0] === fieldName;
-    })[0]?.value;
+    const getValue = getFormValue(formData);
 
-  const onOkHandler = async () => {
-    const data: Schedule = {
-      name: getFormValue("name"),
-      rule: getFormValue("rule"),
-      validFrom: new Date("2020-12-31"),
-    };
-    const result = await fetchApi("/api/schedules", "POST", data);
-    setFormData([]);
-    if (result) {
-      notification("User created", undefined, "success", 6);
-      props.loadData();
-    }
-  };
-
-  const onCancelHandler = () => {
-    setFormData([]);
-  };
-
-  return (
-    <CustomModal
-      okFn={onOkHandler}
-      cancelFn={onCancelHandler}
-      okButtonName="Add"
-      cancelButtonName="Cancel"
-      ref={ref}
-      okButtonDisabled={
-        formData.filter((item) => item.errors?.length).length > 0
+    const onOkHandler = async () => {
+      const data: Schedule = {
+        name: getValue("name"),
+        rule: getValue("rule"),
+        validFrom: new Date("2020-12-31"),
+        runtimeResource: {
+          id: getValue("runtimeResourceId"),
+        } as RuntimeResource,
+      };
+      const result = await fetchApi("/api/schedules", "POST", data);
+      setFormData([]);
+      if (result) {
+        notification("Schedule created", undefined, "success", 6);
+        loadData();
       }
-    >
-      <h3>Add new user</h3>
-      <br />
-      <Form
-        fields={formData}
-        onFieldsChange={(_, fields) => {
-          setFormData(fields);
-        }}
-        {...formSettings}
+    };
+
+    const onCancelHandler = () => {
+      setFormData([]);
+    };
+
+    useEffect(() => {
+      try {
+        setReadableRule(cronstrue.toString("0 12 * * *"));
+        const iterator = parseExpression("0 12 * * *");
+        const arr = [];
+        for (let i = 0; i < 14; i++) {
+          const next = iterator.next();
+          arr.push(next.toString());
+        }
+        setNextIterations(arr);
+      } catch (error) {
+        setReadableRule("Wrong rule!");
+      }
+    }, []);
+
+    return (
+      <CustomModal
+        okFn={onOkHandler}
+        cancelFn={onCancelHandler}
+        okButtonName="Add"
+        cancelButtonName="Cancel"
+        ref={ref}
+        width={1000}
+        okButtonDisabled={
+          formData.filter((item) => item.errors?.length).length > 0
+        }
       >
-        <Form.Item
-          label="Username"
-          name="username"
-          rules={[{ required: true, message: "Please input username!" }]}
+        <h3>Add new schedule</h3>
+        <br />
+        <Form
+          fields={formData}
+          onFieldsChange={(_, fields) => {
+            setFormData(fields);
+            try {
+              setReadableRule(cronstrue.toString(getValue("rule")));
+              const iterator = parseExpression(getValue("rule"));
+              const arr = [];
+              for (let i = 0; i < 14; i++) {
+                const next = iterator.next();
+                arr.push(next.toString());
+              }
+              setNextIterations(arr);
+            } catch (error) {
+              setReadableRule("Wrong rule!");
+            }
+          }}
+          initialValues={{ rule: "0 12 * * *" }}
+          {...formSettings}
         >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          label="Password"
-          name="password"
-          rules={[
-            {
-              pattern: /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{5,}$/,
-              message:
-                "Minimum password length is 5 and it must contain at least one upper case English letter, one lower case English letter, one digit!",
-            },
-          ]}
-        >
-          <Input.Password />
-        </Form.Item>
-        <Form.Item
-          label="Confirm password"
-          dependencies={["password"]}
-          name="confirmPassword"
-          rules={[
-            {
-              required: getFormValue("password") || false,
-              message: "The two passwords that you entered do not match!",
-            },
-            ({ getFieldValue }) => ({
-              validator(_, value) {
-                if (!value || getFieldValue("password") === value) {
-                  return Promise.resolve();
+          <Form.Item
+            label="Name"
+            name="name"
+            rules={[{ required: true, message: "Please enter schedule name!" }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="Machine"
+            name="runtimeResourceId"
+            rules={[
+              { required: true, message: "Please enter runtime resource!" },
+            ]}
+          >
+            <Select>
+              {machines.map((machine) => {
+                if (machine.id) {
+                  return (
+                    <Select.Option value={machine.id} key={machine.id}>
+                      {machine.friendlyName}
+                    </Select.Option>
+                  );
                 }
-                return Promise.reject(
-                  new Error("The two passwords that you entered do not match!")
-                );
-              },
-            }),
-          ]}
-        >
-          <Input.Password />
-        </Form.Item>
-      </Form>
-    </CustomModal>
-  );
-});
+                return null;
+              })}
+            </Select>
+          </Form.Item>
+          <Form.Item
+            label="Rule"
+            name="rule"
+            rules={[{ required: true, message: "Please enter rule!" }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item label="Rule translation" style={{ marginTop: "-16px" }}>
+            <span
+              style={{
+                // fontSize: "12px",
+                // marginBottom: "-4px",
+                marginTop: "2px",
+              }}
+            >
+              {readableRule}
+            </span>
+          </Form.Item>
+          <Form.Item label="Next iterations" style={{ marginTop: "-16px" }}>
+            {nextIterations.map((value) => (
+              <p
+                style={{
+                  // fontSize: "12px",
+                  marginBottom: "-2px",
+                  marginTop: "2px",
+                }}
+              >
+                {value}
+              </p>
+            ))}
+          </Form.Item>
+        </Form>
+      </CustomModal>
+    );
+  }
+);
 
 export default AddScheduleModal;
