@@ -9,10 +9,10 @@ import {
   EditOutlined,
   CaretRightOutlined,
 } from "@ant-design/icons";
-import EditScheduleModal from "./EditScheduleModal";
+import AddOrEditScheduleModal from "./AddOrEditScheduleModal";
 import { RuntimeResource, Schedule, Task } from "../../utils/types";
 import catchAndNotify from "../../utils/catchAndNotify";
-import AddScheduleModal from "./AddScheduleModal";
+// import AddScheduleModal from "./AddScheduleModal";
 
 const Schedules = () => {
   const [schedules, setSchedules] = useState([] as Schedule[]);
@@ -22,11 +22,11 @@ const Schedules = () => {
   const [filteredSchedules, setFilteredSchedules] = useState([] as Schedule[]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedSchedule, setSelectedSchedule] = useState(
-    (undefined as unknown) as Schedule
+    undefined as Schedule | undefined
   );
 
   const editScheduleModalRef = useRef<{ showModal: () => void }>(null);
-  const addScheduleModalRef = useRef<{ showModal: () => void }>(null);
+  // const addScheduleModalRef = useRef<{ showModal: () => void }>(null);
   // const DeleteUserModalRef = useRef<{ showModal: () => void }>(null);
 
   const loadData = () => {
@@ -61,19 +61,19 @@ const Schedules = () => {
 
   return (
     <>
-      <EditScheduleModal
+      <AddOrEditScheduleModal
         loadData={loadData}
         schedule={selectedSchedule}
         machines={machines}
         tasks={tasks}
         ref={editScheduleModalRef}
       />
-      <AddScheduleModal
+      {/* <AddScheduleModal
         loadData={loadData}
         machines={machines}
         tasks={tasks}
         ref={addScheduleModalRef}
-      />
+      /> */}
       {/* <DeleteModal
         id={selectedJobId}
         route={"/api/users"}
@@ -84,7 +84,8 @@ const Schedules = () => {
         <Button
           type="primary"
           onClick={() => {
-            addScheduleModalRef?.current?.showModal();
+            setSelectedSchedule(undefined);
+            editScheduleModalRef?.current?.showModal();
           }}
         >
           Add new schedule
