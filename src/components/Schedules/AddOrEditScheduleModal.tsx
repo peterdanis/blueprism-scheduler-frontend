@@ -1,6 +1,6 @@
 import React, { forwardRef, useEffect, useState } from "react";
 import CustomModal from "../CustomModal";
-import { Button, Col, Form, Input, Row, Select } from "antd";
+import { Button, Col, DatePicker, Form, Input, Row, Select } from "antd";
 import fetchApi from "../../services/fetchApi";
 import notification from "../../utils/notification";
 import { RuntimeResource, Schedule, Task } from "../../utils/types";
@@ -9,6 +9,7 @@ import cronstrue from "cronstrue";
 import { parseExpression } from "cron-parser";
 import { PlusOutlined } from "@ant-design/icons";
 import { useForm } from "antd/lib/form/Form";
+import moment from "moment";
 
 type Props = {
   loadData: () => void;
@@ -63,17 +64,27 @@ const AddOrEditScheduleModal = forwardRef(
 
     useEffect(() => {
       form.resetFields();
+      let initialValues: Schedule;
       if (schedule) {
-        form.setFieldsValue(
-          Object.assign({}, schedule, {
-            runtimeResourceId: schedule.runtimeResource?.id,
-            tasks: schedule.scheduleTask?.map((task) => task.task),
-          })
-        );
-        updateRuleDetails(schedule.rule);
+        initialValues = schedule;
       } else {
-        form.setFieldsValue({ name: "", rule: "0 16 * * *" });
+        initialValues = {
+          name: "",
+          rule: "0 16 * * *",
+          validFrom: new Date(),
+          validUntil: new Date("9999-12-31T00:00:00"),
+          priority: 50,
+        };
       }
+      form.setFieldsValue(
+        Object.assign({}, initialValues, {
+          runtimeResourceId: initialValues.runtimeResource?.id,
+          tasks: initialValues.scheduleTask?.map((task) => task.task),
+          _validFrom: moment(initialValues.validFrom),
+          _validUntil: moment(initialValues.validUntil),
+        })
+      );
+      updateRuleDetails(initialValues.rule);
     }, [schedule, form]);
 
     return (
@@ -107,10 +118,37 @@ const AddOrEditScheduleModal = forwardRef(
                 label="Name"
                 name="name"
                 rules={[
-                  { required: true, message: "Please enter schedule name!" },
+                  { required: true, message: "Please enter schedule name" },
                 ]}
               >
                 <Input />
+              </Form.Item>
+              <Form.Item
+                label="Priority"
+                name="priority"
+                rules={[
+                  { required: true, message: "Please specify priority" },
+                  {
+                    pattern: /^\d{1,}$/,
+                    message: "Must be a number!",
+                  },
+                ]}
+              >
+                <Input />
+              </Form.Item>
+              <Form.Item
+                label="Valid from"
+                name="_validFrom"
+                rules={[{ required: true, message: "Please enter start date" }]}
+              >
+                <DatePicker showTime />
+              </Form.Item>{" "}
+              <Form.Item
+                label="Valid until"
+                name="_validUntil"
+                rules={[{ required: true, message: "Please enter end date" }]}
+              >
+                <DatePicker showTime />
               </Form.Item>
               <Form.Item
                 label="Machine"
@@ -118,7 +156,7 @@ const AddOrEditScheduleModal = forwardRef(
                 rules={[
                   {
                     required: true,
-                    message: "Please enter runtime resource!",
+                    message: "Please select runtime resource",
                   },
                 ]}
               >
