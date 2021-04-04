@@ -89,6 +89,8 @@ const Users = () => {
               <>
                 <Space>
                   <Button
+                    disabled
+                    key={`${record.id}-edit`}
                     size="small"
                     type={"primary"}
                     icon={<EditOutlined />}
@@ -98,6 +100,7 @@ const Users = () => {
                     }}
                   />
                   <Button
+                    key={`${record.id}-apiKey`}
                     size="small"
                     type={"primary"}
                     icon={<KeyOutlined />}
@@ -109,6 +112,7 @@ const Users = () => {
                     Generate
                   </Button>
                   <Button
+                    key={`${record.id}-delete`}
                     size="small"
                     danger
                     type={"primary"}

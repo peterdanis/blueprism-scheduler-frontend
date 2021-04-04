@@ -75,6 +75,8 @@ const Machines = () => {
               <>
                 <Space>
                   <Button
+                    disabled
+                    key={`${record.id}-delete`}
                     size="small"
                     danger
                     type={"primary"}

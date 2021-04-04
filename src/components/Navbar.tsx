@@ -46,6 +46,7 @@ export const Navbar = (props: Props) => {
         <>{MenuItems}</>
       </Menu>
       <Button
+        disabled
         danger
         type={"primary"}
         style={{ right: "16px", marginTop: "-48px", position: "absolute" }}

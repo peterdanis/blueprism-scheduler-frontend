@@ -182,6 +182,8 @@ const Jobs = () => {
                 <>
                   <Space>
                     <Button
+                      disabled
+                      key={`${record.id}-stop`}
                       size="small"
                       type="primary"
                       danger

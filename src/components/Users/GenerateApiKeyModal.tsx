@@ -40,6 +40,7 @@ const GenerateApiKeyModal = forwardRef(({ id, loadData }: Props, ref) => {
 
   return (
     <CustomModal
+      key="GenearateApiKeyModal"
       okFn={onOkHandler}
       okButtonName="Generate"
       cancelButtonName="Cancel"

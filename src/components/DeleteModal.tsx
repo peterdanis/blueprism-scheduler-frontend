@@ -21,6 +21,7 @@ const DeleteModal = forwardRef(({ id, route, loadData }: Props, ref) => {
 
   return (
     <CustomModal
+      key="DeleteModal"
       okFn={onOkHandler}
       okButtonName="Delete"
       cancelButtonName="Cancel"

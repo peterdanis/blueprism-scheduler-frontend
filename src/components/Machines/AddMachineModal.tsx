@@ -45,6 +45,7 @@ const AddMachineModal = forwardRef((props: Props, ref) => {
 
   return (
     <CustomModal
+      key="AddOrEditMachineModal"
       okFn={onOkHandler}
       cancelFn={onCancelHandler}
       okButtonName="Add"

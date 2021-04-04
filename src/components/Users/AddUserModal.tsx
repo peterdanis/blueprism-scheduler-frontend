@@ -38,6 +38,7 @@ const AddUserModal = forwardRef((props: Props, ref) => {
 
   return (
     <CustomModal
+      key="AddUserModal"
       okFn={onOkHandler}
       cancelFn={onCancelHandler}
       okButtonName="Add"

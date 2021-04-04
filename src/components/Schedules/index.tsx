@@ -127,6 +127,8 @@ const Schedules = () => {
               <>
                 <Space>
                   <Button
+                    disabled
+                    key={`${record.id}-run`}
                     size="small"
                     type={"primary"}
                     icon={<CaretRightOutlined />}
@@ -138,6 +140,7 @@ const Schedules = () => {
                     Run
                   </Button>
                   <Button
+                    key={`${record.id}-edit`}
                     size="small"
                     type={"primary"}
                     icon={<EditOutlined />}
@@ -147,6 +150,7 @@ const Schedules = () => {
                     }}
                   />
                   <Button
+                    key={`${record.id}-delete`}
                     size="small"
                     danger
                     type={"primary"}

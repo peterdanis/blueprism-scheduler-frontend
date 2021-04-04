@@ -61,6 +61,8 @@ const Tasks = () => {
               <>
                 <Space>
                   <Button
+                    disabled
+                    key={`${record.id}-edit`}
                     size="small"
                     type={"primary"}
                     icon={<EditOutlined />}
@@ -70,6 +72,8 @@ const Tasks = () => {
                     }}
                   />
                   <Button
+                    disabled
+                    key={`${record.id}-delete`}
                     size="small"
                     danger
                     type={"primary"}
