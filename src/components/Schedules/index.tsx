@@ -12,6 +12,7 @@ import {
 import AddOrEditScheduleModal from "./AddOrEditScheduleModal";
 import { RuntimeResource, Schedule, Task } from "../../utils/types";
 import catchAndNotify from "../../utils/catchAndNotify";
+import DeleteModal from "../DeleteModal";
 // import AddScheduleModal from "./AddScheduleModal";
 
 const Schedules = () => {
@@ -25,9 +26,7 @@ const Schedules = () => {
     undefined as Schedule | undefined
   );
 
-  const editScheduleModalRef = useRef<{ showModal: () => void }>(null);
-  // const addScheduleModalRef = useRef<{ showModal: () => void }>(null);
-  // const DeleteUserModalRef = useRef<{ showModal: () => void }>(null);
+  const deleteScheduleModalRef = useRef<{ showModal: () => void }>(null);
 
   const loadData = () => {
     setIsLoading(true);
@@ -82,18 +81,12 @@ const Schedules = () => {
         tasks={tasks}
         ref={editScheduleModalRef}
       />
-      {/* <AddScheduleModal
+      <DeleteModal
+        id={selectedSchedule?.id || 0}
+        route={"/api/schedules"}
+        ref={deleteScheduleModalRef}
         loadData={loadData}
-        machines={machines}
-        tasks={tasks}
-        ref={addScheduleModalRef}
-      /> */}
-      {/* <DeleteModal
-        id={selectedJobId}
-        route={"/api/users"}
-        ref={DeleteUserModalRef}
-        loadData={loadData}
-      /> */}
+      />
       <Space direction="vertical" size="large">
         <Button
           type="primary"
@@ -159,7 +152,7 @@ const Schedules = () => {
                     icon={<DeleteOutlined />}
                     onClick={(e) => {
                       setSelectedSchedule(findSchedule(record.id!));
-                      // DeleteUserModalRef?.current?.showModal();
+                      deleteScheduleModalRef?.current?.showModal();
                     }}
                   />
                 </Space>
