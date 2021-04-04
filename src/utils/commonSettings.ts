@@ -1,4 +1,4 @@
-import { FormProps } from "antd";
+import { FormProps, SelectProps } from "antd";
 
 export const idColumnWidth = "45px";
 export const tableSettings = {
@@ -11,3 +11,13 @@ export const formSettings: Partial<FormProps> = {
   wrapperCol: { span: 16 },
   size: "small",
 };
+export const filterInSelect = {
+  showSearch: true,
+  filterOption: (input: string, option: { children?: string }) => {
+    if (option && option.children) {
+      console.log(option);
+      return option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+    }
+    return false;
+  },
+} as SelectProps<string>;

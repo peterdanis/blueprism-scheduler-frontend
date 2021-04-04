@@ -4,7 +4,7 @@ import { Button, Col, DatePicker, Form, Input, Row, Select } from "antd";
 import fetchApi from "../../services/fetchApi";
 import notification from "../../utils/notification";
 import { RuntimeResource, Schedule, Task } from "../../utils/types";
-import { formSettings } from "../../utils/commonSettings";
+import { filterInSelect, formSettings } from "../../utils/commonSettings";
 import cronstrue from "cronstrue";
 import { parseExpression } from "cron-parser";
 import { PlusOutlined } from "@ant-design/icons";
@@ -160,7 +160,7 @@ const AddOrEditScheduleModal = forwardRef(
                   },
                 ]}
               >
-                <Select>
+                <Select {...filterInSelect}>
                   {machines.map((machine) => {
                     if (machine.id) {
                       return (
@@ -183,7 +183,7 @@ const AddOrEditScheduleModal = forwardRef(
                             key={field.key}
                             name={[field.name, "name"]}
                           >
-                            <Select>
+                            <Select {...filterInSelect}>
                               {tasks.map((task) => {
                                 if (task.id) {
                                   return (
