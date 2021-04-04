@@ -33,13 +33,27 @@ const Schedules = () => {
     setIsLoading(true);
 
     const runtimeResourcesPromise = fetchApi("/api/runtimeResources").then(
-      (data) => {
-        setMachines(data);
+      (data: RuntimeResource[]) => {
+        if (Array.isArray(data)) {
+          setMachines(
+            data.sort((a, b) =>
+              a.friendlyName.toLowerCase() < b.friendlyName.toLowerCase()
+                ? -1
+                : 1
+            )
+          );
+        }
       }
     );
 
-    const tasksPromise = fetchApi("/api/tasks").then((data) => {
-      setTasks(data);
+    const tasksPromise = fetchApi("/api/tasks").then((data: Task[]) => {
+      if (Array.isArray(data)) {
+        setTasks(
+          data.sort((a, b) =>
+            a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1
+          )
+        );
+      }
     });
 
     const schedulesPromise = fetchApi("/api/schedules").then((data) => {
