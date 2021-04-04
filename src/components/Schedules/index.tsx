@@ -17,8 +17,8 @@ import DeleteModal from "../DeleteModal";
 
 const Schedules = () => {
   const [schedules, setSchedules] = useState([] as Schedule[]);
-  const [machines, setMachines] = useState([] as RuntimeResource[]);
-  const [tasks, setTasks] = useState([] as Task[]);
+  const [machines, setMachines] = useState([] as RuntimeResource[] | undefined);
+  const [tasks, setTasks] = useState([] as Task[] | undefined);
 
   const [filteredSchedules, setFilteredSchedules] = useState([] as Schedule[]);
   const [isLoading, setIsLoading] = useState(true);
@@ -26,6 +26,7 @@ const Schedules = () => {
     undefined as Schedule | undefined
   );
 
+  const addOrEditScheduleModalRef = useRef<{ showModal: () => void }>(null);
   const deleteScheduleModalRef = useRef<{ showModal: () => void }>(null);
 
   const loadData = () => {
@@ -77,9 +78,9 @@ const Schedules = () => {
       <AddOrEditScheduleModal
         loadData={loadData}
         schedule={selectedSchedule}
-        machines={machines}
-        tasks={tasks}
-        ref={editScheduleModalRef}
+        machines={machines || []}
+        tasks={tasks || []}
+        ref={addOrEditScheduleModalRef}
       />
       <DeleteModal
         id={selectedSchedule?.id || 0}
@@ -92,7 +93,7 @@ const Schedules = () => {
           type="primary"
           onClick={() => {
             setSelectedSchedule(undefined);
-            editScheduleModalRef?.current?.showModal();
+            addOrEditScheduleModalRef?.current?.showModal();
           }}
         >
           Add new schedule
@@ -131,7 +132,7 @@ const Schedules = () => {
                     icon={<CaretRightOutlined />}
                     onClick={(e) => {
                       setSelectedSchedule(findSchedule(record.id!));
-                      // DeleteUserModalRef?.current?.showModal();
+                      // xyzModalRef?.current?.showModal();
                     }}
                   >
                     Run
@@ -142,7 +143,7 @@ const Schedules = () => {
                     icon={<EditOutlined />}
                     onClick={(e) => {
                       setSelectedSchedule(findSchedule(record.id!));
-                      editScheduleModalRef?.current?.showModal();
+                      addOrEditScheduleModalRef?.current?.showModal();
                     }}
                   />
                   <Button

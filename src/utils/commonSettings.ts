@@ -15,7 +15,6 @@ export const filterInSelect = {
   showSearch: true,
   filterOption: (input: string, option: { children?: string }) => {
     if (option && option.children) {
-      console.log(option);
       return option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
     }
     return false;
