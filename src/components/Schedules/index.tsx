@@ -13,7 +13,6 @@ import AddOrEditScheduleModal from "./AddOrEditScheduleModal";
 import { RuntimeResource, Schedule, Task } from "../../utils/types";
 import catchAndNotify from "../../utils/catchAndNotify";
 import DeleteModal from "../DeleteModal";
-// import AddScheduleModal from "./AddScheduleModal";
 
 const Schedules = () => {
   const [schedules, setSchedules] = useState([] as Schedule[]);
@@ -67,9 +66,6 @@ const Schedules = () => {
       tasksPromise,
     ]).catch(catchAndNotify);
   };
-
-  const findSchedule = (id: number): Schedule =>
-    schedules.filter((_schedule) => _schedule.id === id)[0];
 
   useEffect(loadData, []);
 
@@ -133,7 +129,7 @@ const Schedules = () => {
                     type={"primary"}
                     icon={<CaretRightOutlined />}
                     onClick={(e) => {
-                      setSelectedSchedule(findSchedule(record.id!));
+                      setSelectedSchedule(record);
                       // xyzModalRef?.current?.showModal();
                     }}
                   >
@@ -145,7 +141,7 @@ const Schedules = () => {
                     type={"primary"}
                     icon={<EditOutlined />}
                     onClick={(e) => {
-                      setSelectedSchedule(findSchedule(record.id!));
+                      setSelectedSchedule(record);
                       addOrEditScheduleModalRef?.current?.showModal();
                     }}
                   />
@@ -156,7 +152,7 @@ const Schedules = () => {
                     type={"primary"}
                     icon={<DeleteOutlined />}
                     onClick={(e) => {
-                      setSelectedSchedule(findSchedule(record.id!));
+                      setSelectedSchedule(record);
                       deleteScheduleModalRef?.current?.showModal();
                     }}
                   />

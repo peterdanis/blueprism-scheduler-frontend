@@ -41,7 +41,12 @@ const AddOrEditScheduleModal = forwardRef(
         result = await fetchApi("/api/schedules/", "POST", data);
       }
       if (result) {
-        notification("Schedule updated", undefined, "success", 6);
+        notification(
+          `Schedule ${schedule ? "updated" : "created"}`,
+          undefined,
+          "success",
+          6
+        );
         loadData();
       }
     };
