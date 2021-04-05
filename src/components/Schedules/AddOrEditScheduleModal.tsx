@@ -113,7 +113,7 @@ const AddOrEditScheduleModal = forwardRef(
           {...formSettings}
         >
           <Row>
-            <Col span={12}>
+            <Col span={14}>
               <Form.Item
                 label="Name"
                 name="name"
@@ -179,33 +179,65 @@ const AddOrEditScheduleModal = forwardRef(
                     return (
                       <>
                         {fields.map((field) => (
-                          <Form.Item
-                            key={field.key}
-                            name={[field.name, "name"]}
-                          >
-                            <Row>
-                              <Col span={}>
-                                <Select {...filterInSelect}>
-                                  {tasks.map((task) => {
-                                    if (task.id) {
-                                      return (
-                                        <Select.Option
-                                          value={task.id}
-                                          key={task.id}
-                                        >
-                                          {task.name}
-                                        </Select.Option>
-                                      );
-                                    }
-                                    return null;
-                                  })}
-                                </Select>
-                              </Col>
-                              <Col>
-                                <Input />
-                              </Col>
-                            </Row>
-                          </Form.Item>
+                          <>
+                            <Form.Item
+                              key={field.key}
+                              name={[field.name, "task"]}
+                              style={{
+                                display: "inline-block",
+                                width: "calc(75%)",
+                              }}
+                            >
+                              <Select
+                                {...filterInSelect}
+                                placeholder="Start typing task name"
+                              >
+                                {tasks.map((task) => {
+                                  if (task.id) {
+                                    return (
+                                      <Select.Option
+                                        value={task.id}
+                                        key={task.id}
+                                      >
+                                        {task.name}
+                                      </Select.Option>
+                                    );
+                                  }
+                                  return null;
+                                })}
+                              </Select>
+                            </Form.Item>
+                            <span
+                              style={{
+                                paddingLeft: "10px",
+                                display: "inline-block",
+                                width: "calc(15%)",
+                              }}
+                            >
+                              Delay:
+                            </span>
+                            <Form.Item
+                              key={`${field.key}-delay`}
+                              name={[field.name, "delay"]}
+                              style={{
+                                display: "inline-block",
+
+                                width: "calc(10%)",
+                              }}
+                              rules={[
+                                {
+                                  required: true,
+                                  message: "Delay in seconds",
+                                },
+                                {
+                                  pattern: /^\d{1,}$/,
+                                  message: "Must be a number!",
+                                },
+                              ]}
+                            >
+                              <Input placeholder="sec" />
+                            </Form.Item>
+                          </>
                         ))}
                         <Form.Item>
                           <Button
@@ -223,7 +255,7 @@ const AddOrEditScheduleModal = forwardRef(
                 </Form.List>
               </Form.Item>
             </Col>
-            <Col span={12}>
+            <Col span={10}>
               <Form.Item
                 label="Rule"
                 name="rule"
