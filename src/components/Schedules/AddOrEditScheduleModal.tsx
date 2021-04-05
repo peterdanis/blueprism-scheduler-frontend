@@ -142,7 +142,7 @@ const AddOrEditScheduleModal = forwardRef(
                 rules={[{ required: true, message: "Please enter start date" }]}
               >
                 <DatePicker showTime />
-              </Form.Item>{" "}
+              </Form.Item>
               <Form.Item
                 label="Valid until"
                 name="_validUntil"
@@ -183,21 +183,28 @@ const AddOrEditScheduleModal = forwardRef(
                             key={field.key}
                             name={[field.name, "name"]}
                           >
-                            <Select {...filterInSelect}>
-                              {tasks.map((task) => {
-                                if (task.id) {
-                                  return (
-                                    <Select.Option
-                                      value={task.id}
-                                      key={task.id}
-                                    >
-                                      {task.name}
-                                    </Select.Option>
-                                  );
-                                }
-                                return null;
-                              })}
-                            </Select>
+                            <Row>
+                              <Col span={}>
+                                <Select {...filterInSelect}>
+                                  {tasks.map((task) => {
+                                    if (task.id) {
+                                      return (
+                                        <Select.Option
+                                          value={task.id}
+                                          key={task.id}
+                                        >
+                                          {task.name}
+                                        </Select.Option>
+                                      );
+                                    }
+                                    return null;
+                                  })}
+                                </Select>
+                              </Col>
+                              <Col>
+                                <Input />
+                              </Col>
+                            </Row>
                           </Form.Item>
                         ))}
                         <Form.Item>
