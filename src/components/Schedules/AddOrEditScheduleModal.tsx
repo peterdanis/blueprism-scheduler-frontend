@@ -3,7 +3,12 @@ import CustomModal from "../CustomModal";
 import { Button, Col, DatePicker, Form, Input, Row, Select } from "antd";
 import fetchApi from "../../services/fetchApi";
 import notification from "../../utils/notification";
-import { RuntimeResource, Schedule, Task } from "../../utils/types";
+import {
+  RuntimeResource,
+  Schedule,
+  ScheduleTask,
+  Task,
+} from "../../utils/types";
 import { filterInSelect, formSettings } from "../../utils/commonSettings";
 import cronstrue from "cronstrue";
 import { parseExpression } from "cron-parser";
@@ -34,6 +39,25 @@ const AddOrEditScheduleModal = forwardRef(
         runtimeResource: {
           id: form.getFieldValue("runtimeResourceId"),
         } as RuntimeResource,
+        scheduleTask: form
+          .getFieldValue("tasks")
+          .map((el: any, index: number) => {
+            let scheduleId: number | undefined;
+            let scheduleTaskId: number | undefined;
+            if (schedule) {
+              scheduleId = schedule.id;
+              if (schedule.scheduleTask && schedule.scheduleTask[index]) {
+                scheduleTaskId = schedule.scheduleTask[index].id;
+              }
+            }
+            return {
+              id: scheduleTaskId,
+              step: index + 1,
+              schedule: { id: scheduleId },
+              task: { id: el.task },
+              delayAfter: el.delay,
+            };
+          }),
       };
       if (schedule) {
         result = await fetchApi(`/api/schedules/${schedule.id}`, "PATCH", data);
@@ -84,7 +108,12 @@ const AddOrEditScheduleModal = forwardRef(
       form.setFieldsValue(
         Object.assign({}, initialValues, {
           runtimeResourceId: initialValues.runtimeResource?.id,
-          tasks: initialValues.scheduleTask?.map((task) => task.task),
+          tasks: initialValues.scheduleTask?.map((scheduleTask) => {
+            return {
+              task: scheduleTask.task.id,
+              delay: scheduleTask.delayAfter,
+            };
+          }),
           _validFrom: moment(initialValues.validFrom),
           _validUntil: moment(initialValues.validUntil),
         })
@@ -194,8 +223,8 @@ const AddOrEditScheduleModal = forwardRef(
                               }}
                             >
                               <Select
-                                {...filterInSelect}
-                                placeholder="Start typing task name"
+                              // {...filterInSelect}
+                              // placeholder="Start typing task name"
                               >
                                 {tasks.map((task) => {
                                   if (task.id) {

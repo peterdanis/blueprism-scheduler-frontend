@@ -42,6 +42,7 @@ type JobBase = {
 };
 
 export type ScheduleTask = {
+  id?: number;
   abortEarly?: boolean;
   delayAfter?: number;
   onError?: OnError;
