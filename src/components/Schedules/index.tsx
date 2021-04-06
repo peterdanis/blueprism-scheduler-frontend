@@ -13,6 +13,7 @@ import AddOrEditScheduleModal from "./AddOrEditScheduleModal";
 import { RuntimeResource, Schedule, Task } from "../../utils/types";
 import catchAndNotify from "../../utils/catchAndNotify";
 import DeleteModal from "../DeleteModal";
+import moment from "moment";
 
 const Schedules = () => {
   const [schedules, setSchedules] = useState([] as Schedule[]);
@@ -115,7 +116,28 @@ const Schedules = () => {
           <Column title="Priority" dataIndex="priority" />
           <Column title="Valid from" dataIndex="validFrom" />
           <Column title="Valid until" dataIndex="validUntil" />
-
+          <Column
+            title="Soft timeout"
+            render={(record) => {
+              if (record.softTimeout) {
+                return `${moment
+                  .duration(record.softTimeout)
+                  .days()}d ${moment.duration(record.softTimeout).hours()}h
+                  ${moment.duration(record.softTimeout).minutes()}m`;
+              }
+            }}
+          />
+          <Column
+            title="Hard timeout"
+            render={(record) => {
+              if (record.softTimeout) {
+                return `${moment
+                  .duration(record.softTimeout)
+                  .days()}d ${moment.duration(record.softTimeout).hours()}h
+                  ${moment.duration(record.softTimeout).minutes()}m`;
+              }
+            }}
+          />
           <Column
             title="Actions"
             dataIndex="actions"

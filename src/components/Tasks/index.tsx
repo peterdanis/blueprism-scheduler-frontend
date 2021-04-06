@@ -9,6 +9,7 @@ import { Task } from "../../utils/types";
 import catchAndNotify from "../../utils/catchAndNotify";
 import AddOrEditTaskModal from "./AddOrEditTaskModal";
 import DeleteModal from "../DeleteModal";
+import moment from "moment";
 
 const Tasks = () => {
   const [tasks, setTasks] = useState([] as Task[]);
@@ -58,8 +59,8 @@ const Tasks = () => {
         </Button>
         <SearchBox
           list={tasks}
-          keys={["id", "name"]}
-          placeholder="Search by ID or name"
+          keys={["id", "name", "process"]}
+          placeholder="Search by ID, task or process name"
           resultsSetter={setFilteredTasks}
         />
         <Table
@@ -70,6 +71,29 @@ const Tasks = () => {
         >
           <Column title="ID" dataIndex="id" width={idColumnWidth} />
           <Column title="Name" dataIndex="name" />
+          <Column title="Process" dataIndex="process" />
+          <Column
+            title="Soft timeout"
+            render={(record) => {
+              if (record.softTimeout) {
+                return `${moment
+                  .duration(record.softTimeout)
+                  .days()}d ${moment.duration(record.softTimeout).hours()}h
+                  ${moment.duration(record.softTimeout).minutes()}m`;
+              }
+            }}
+          />
+          <Column
+            title="Hard timeout"
+            render={(record) => {
+              if (record.softTimeout) {
+                return `${moment
+                  .duration(record.softTimeout)
+                  .days()}d ${moment.duration(record.softTimeout).hours()}h
+                  ${moment.duration(record.softTimeout).minutes()}m`;
+              }
+            }}
+          />
           <Column
             title="Actions"
             dataIndex="actions"
