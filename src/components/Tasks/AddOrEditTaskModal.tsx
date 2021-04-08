@@ -5,7 +5,7 @@ import fetchApi from "../../services/fetchApi";
 import notification from "../../utils/notification";
 import { RuntimeResource, Schedule, Task } from "../../utils/types";
 import { filterInSelect, formSettings } from "../../utils/commonSettings";
-import { PlusOutlined } from "@ant-design/icons";
+import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import { useForm } from "antd/lib/form/Form";
 
 type Props = {
@@ -19,9 +19,19 @@ const AddOrEditTaskModal = forwardRef(({ loadData, task }: Props, ref) => {
 
   const onOkHandler = async () => {
     let result;
+    const getInputs = () => {
+      const inputsList = form.getFieldValue("inputs");
+      if (inputsList) {
+        return inputsList.map((input: Input) => ({
+          ...input,
+          "@type": "text",
+        }));
+      }
+    };
     const data: Task = {
       name: form.getFieldValue("name"),
       process: form.getFieldValue("process"),
+      inputs: getInputs(),
     };
     if (task) {
       result = await fetchApi(`/api/tasks/${task.id}`, "PATCH", data);
@@ -51,6 +61,7 @@ const AddOrEditTaskModal = forwardRef(({ loadData, task }: Props, ref) => {
       };
     }
     form.setFieldsValue(initialValues);
+    setHasError(true);
   }, [task, form]);
 
   return (
@@ -61,6 +72,7 @@ const AddOrEditTaskModal = forwardRef(({ loadData, task }: Props, ref) => {
       ref={ref}
       okButtonDisabled={hasError}
       key="AddOrEditTaskModal"
+      width={800}
     >
       <h3>Edit task</h3>
       <br />
@@ -92,6 +104,80 @@ const AddOrEditTaskModal = forwardRef(({ loadData, task }: Props, ref) => {
           ]}
         >
           <Input />
+        </Form.Item>
+        <Form.Item label="Inputs">
+          <Form.List name="inputs">
+            {(fields, { add, remove }) => {
+              return (
+                <div key="inputs-div">
+                  {fields.map((field) => (
+                    <div key={field.key}>
+                      <Form.Item
+                        key={`${field.key}-name`}
+                        name={[field.name, "@name"]}
+                        style={{
+                          display: "inline-block",
+                          width: "calc(40%)",
+                        }}
+                        rules={[
+                          {
+                            required: true,
+                            message: "Provide parameter name",
+                          },
+                        ]}
+                      >
+                        <Input placeholder="Parameter name" />
+                      </Form.Item>
+                      <div
+                        style={{
+                          paddingLeft: "10px",
+                          display: "inline-block",
+                          // width: "calc(1%)",
+                        }}
+                      />
+                      <Form.Item
+                        key={`${field.key}-value`}
+                        name={[field.name, "@value"]}
+                        style={{
+                          display: "inline-block",
+                          width: "calc(40%)",
+                        }}
+                        rules={[
+                          {
+                            required: true,
+                            message: "Provide parameter value",
+                          },
+                        ]}
+                      >
+                        <Input placeholder="Value" />
+                      </Form.Item>
+                      <div
+                        style={{
+                          paddingLeft: "10px",
+                          display: "inline-block",
+                          width: "calc(10%)",
+                        }}
+                      >
+                        <MinusCircleOutlined
+                          onClick={() => remove(field.name)}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                  <Form.Item>
+                    <Button
+                      type="dashed"
+                      onClick={() => add()}
+                      block
+                      icon={<PlusOutlined />}
+                    >
+                      Add task
+                    </Button>
+                  </Form.Item>
+                </div>
+              );
+            }}
+          </Form.List>
         </Form.Item>
       </Form>
     </CustomModal>
