@@ -68,6 +68,7 @@ export type Schedule = {
   rule: string;
   softForceTime?: number;
   softTimeout?: number;
+  timezone?: string;
   validFrom: Date;
   validUntil?: Date;
   waitTime?: number;

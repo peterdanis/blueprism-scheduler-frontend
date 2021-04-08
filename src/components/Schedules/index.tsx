@@ -10,7 +10,7 @@ import {
   CaretRightOutlined,
 } from "@ant-design/icons";
 import AddOrEditScheduleModal from "./AddOrEditScheduleModal";
-import { RuntimeResource, Schedule, Task } from "../../utils/types";
+import { RuntimeResource, Schedule, Setting, Task } from "../../utils/types";
 import catchAndNotify from "../../utils/catchAndNotify";
 import DeleteModal from "../DeleteModal";
 import moment from "moment";
@@ -19,6 +19,7 @@ const Schedules = () => {
   const [schedules, setSchedules] = useState([] as Schedule[]);
   const [machines, setMachines] = useState([] as RuntimeResource[] | undefined);
   const [tasks, setTasks] = useState([] as Task[] | undefined);
+  const [settings, setSettings] = useState([] as Setting[] | undefined);
 
   const [filteredSchedules, setFilteredSchedules] = useState([] as Schedule[]);
   const [isLoading, setIsLoading] = useState(true);
@@ -56,6 +57,14 @@ const Schedules = () => {
       }
     });
 
+    const settingsPromise = fetchApi("/api/settings").then(
+      (data: Setting[]) => {
+        if (Array.isArray(data)) {
+          setSettings(data);
+        }
+      }
+    );
+
     const schedulesPromise = fetchApi("/api/schedules").then((data) => {
       setSchedules(data);
       setIsLoading(false);
@@ -65,6 +74,7 @@ const Schedules = () => {
       schedulesPromise,
       runtimeResourcesPromise,
       tasksPromise,
+      settingsPromise,
     ]).catch(catchAndNotify);
   };
 
@@ -73,6 +83,14 @@ const Schedules = () => {
   return (
     <>
       <AddOrEditScheduleModal
+        defaultPriority={
+          (settings?.filter((setting) => setting.key === "defaultPriority")[0]
+            ?.value as unknown) as number
+        }
+        defaultTimezone={
+          settings?.filter((setting) => setting.key === "defaultTimezone")[0]
+            ?.value as string
+        }
         loadData={loadData}
         schedule={selectedSchedule}
         machines={machines || []}

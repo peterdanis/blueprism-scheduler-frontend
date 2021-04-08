@@ -1,6 +1,7 @@
-import React, { forwardRef, useEffect, useState } from "react";
+import timezones from "./timezones.json";
+import React, { forwardRef, useCallback, useEffect, useState } from "react";
 import CustomModal from "../CustomModal";
-import { Button, Col, DatePicker, Form, Input, Row, Select } from "antd";
+import { Button, Col, DatePicker, Form, Input, Row, Select, Space } from "antd";
 import fetchApi from "../../services/fetchApi";
 import notification from "../../utils/notification";
 import {
@@ -12,36 +13,42 @@ import {
 import { filterInSelect, formSettings } from "../../utils/commonSettings";
 import cronstrue from "cronstrue";
 import { parseExpression } from "cron-parser";
-import { PlusOutlined } from "@ant-design/icons";
+import { PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
 import { useForm } from "antd/lib/form/Form";
 import moment from "moment";
 
 type Props = {
+  defaultPriority: number;
+  defaultTimezone: string;
   loadData: () => void;
-  schedule: Schedule | undefined;
   machines: RuntimeResource[];
+  schedule: Schedule | undefined;
   tasks: Task[];
 };
 
 const AddOrEditScheduleModal = forwardRef(
-  ({ loadData, schedule, machines, tasks }: Props, ref) => {
+  (
+    {
+      defaultPriority,
+      defaultTimezone,
+      loadData,
+      machines,
+      schedule,
+      tasks,
+    }: Props,
+    ref
+  ) => {
     const [readableRule, setReadableRule] = useState("");
     const [nextIterations, setNextIterations] = useState([] as string[]);
     const [form] = useForm();
-    const [hasError, setHasError] = useState(false);
+    const [hasError, setHasError] = useState(true);
 
     const onOkHandler = async () => {
       let result;
-      const data: Schedule = {
-        name: form.getFieldValue("name"),
-        rule: form.getFieldValue("rule"),
-        validFrom: new Date("2020-12-31"),
-        runtimeResource: {
-          id: form.getFieldValue("runtimeResourceId"),
-        } as RuntimeResource,
-        scheduleTask: form
-          .getFieldValue("tasks")
-          .map((el: any, index: number) => {
+      const getScheduledTask = (): ScheduleTask[] | undefined => {
+        const taskList = form.getFieldValue("tasks");
+        if (taskList) {
+          const result = taskList.map((el: any, index: number) => {
             let scheduleId: number | undefined;
             let scheduleTaskId: number | undefined;
             if (schedule) {
@@ -57,7 +64,21 @@ const AddOrEditScheduleModal = forwardRef(
               task: { id: el.task },
               delayAfter: el.delay,
             };
-          }),
+          });
+          return result;
+        }
+      };
+      const data: Schedule = {
+        name: form.getFieldValue("name"),
+        priority: form.getFieldValue("priority"),
+        rule: form.getFieldValue("rule"),
+        runtimeResource: {
+          id: form.getFieldValue("runtimeResourceId"),
+        } as RuntimeResource,
+        scheduleTask: getScheduledTask(),
+        timezone: form.getFieldValue("timezone"),
+        validFrom: form.getFieldValue("_validFrom"),
+        validUntil: form.getFieldValue("_validUntil"),
       };
       if (schedule) {
         result = await fetchApi(`/api/schedules/${schedule.id}`, "PATCH", data);
@@ -75,34 +96,44 @@ const AddOrEditScheduleModal = forwardRef(
       }
     };
 
-    const updateRuleDetails = (value: string): void => {
-      try {
-        setReadableRule(cronstrue.toString(value));
-        const iterator = parseExpression(value);
-        const arr = [];
-        for (let i = 0; i < 14; i++) {
-          const next = iterator.next();
-          arr.push(next.toString().replace(/\(.*\)/, ""));
+    const updateRuleDetails = useCallback(
+      (value: string): void => {
+        try {
+          setReadableRule(cronstrue.toString(value));
+          const iterator = parseExpression(value, {
+            tz: form.getFieldValue("timezone"),
+          });
+          const arr = [];
+          for (let i = 0; i < 14; i++) {
+            const next = iterator.next();
+            arr.push(next.toDate().toUTCString());
+          }
+          setNextIterations(arr);
+        } catch (error) {
+          setReadableRule("Wrong rule!");
+          setNextIterations([]);
         }
-        setNextIterations(arr);
-      } catch (error) {
-        setReadableRule("Wrong rule!");
-        setNextIterations([]);
-      }
-    };
+      },
+      [form]
+    );
 
     useEffect(() => {
+      console.log(defaultTimezone);
       form.resetFields();
       let initialValues: Schedule;
       if (schedule) {
+        if (!schedule.timezone) {
+          schedule.timezone = defaultTimezone;
+        }
         initialValues = schedule;
       } else {
         initialValues = {
           name: "",
+          priority: defaultPriority,
           rule: "0 16 * * *",
+          timezone: defaultTimezone,
           validFrom: new Date(),
-          validUntil: new Date("9999-12-31T00:00:00"),
-          priority: 50,
+          validUntil: new Date("9999-12-31T00:00:00Z"),
         };
       }
       form.setFieldsValue(
@@ -119,7 +150,8 @@ const AddOrEditScheduleModal = forwardRef(
         })
       );
       updateRuleDetails(initialValues.rule);
-    }, [schedule, form]);
+      setHasError(true);
+    }, [schedule, form, defaultPriority, defaultTimezone, updateRuleDetails]);
 
     return (
       <CustomModal
@@ -135,12 +167,18 @@ const AddOrEditScheduleModal = forwardRef(
         <br />
         <Form
           form={form}
-          onFieldsChange={(_, fields) => {
+          onFieldsChange={(changedFields, fields) => {
             setHasError(
               form.getFieldsError().filter((field) => field.errors.length > 0)
                 .length > 0
             );
-            if (_.map((field: any) => field.name[0]).includes("rule")) {
+            const _changedFields = changedFields.map(
+              (field: any) => field.name[0]
+            );
+            if (
+              _changedFields.includes("rule") ||
+              _changedFields.includes("timezone")
+            ) {
               updateRuleDetails(form.getFieldValue("rule"));
             }
           }}
@@ -163,8 +201,8 @@ const AddOrEditScheduleModal = forwardRef(
                 rules={[
                   { required: true, message: "Please specify priority" },
                   {
-                    pattern: /^\d{1,}$/,
-                    message: "Must be a number!",
+                    pattern: /^[1-9]{1,}\d*$/,
+                    message: "Must be a number greater than 0",
                   },
                 ]}
               >
@@ -207,24 +245,45 @@ const AddOrEditScheduleModal = forwardRef(
                   })}
                 </Select>
               </Form.Item>
+              <Form.Item
+                label="Rule timezone"
+                name="timezone"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please select timezone",
+                  },
+                ]}
+              >
+                <Select {...filterInSelect}>
+                  {timezones.names.map((timezone) => {
+                    return (
+                      <Select.Option value={timezone} key={timezone}>
+                        {timezone}
+                      </Select.Option>
+                    );
+                  })}
+                </Select>
+              </Form.Item>
               <Form.Item label="Tasks">
                 <Form.List name="tasks">
                   {(fields, { add, remove }) => {
                     return (
-                      <>
+                      <div key="tasks-div">
                         {fields.map((field) => (
-                          <>
+                          <div key={field.key}>
                             <Form.Item
-                              key={field.key}
+                              key={`${field.key}-form-item`}
                               name={[field.name, "task"]}
                               style={{
                                 display: "inline-block",
-                                width: "calc(75%)",
+                                width: "calc(65%)",
                               }}
                             >
                               <Select
-                              // {...filterInSelect}
-                              // placeholder="Start typing task name"
+                                key={`${field.key}-select`}
+                                {...filterInSelect}
+                                placeholder="Start typing task name"
                               >
                                 {tasks.map((task) => {
                                   if (task.id) {
@@ -255,7 +314,6 @@ const AddOrEditScheduleModal = forwardRef(
                               name={[field.name, "delay"]}
                               style={{
                                 display: "inline-block",
-
                                 width: "calc(10%)",
                               }}
                               rules={[
@@ -271,10 +329,22 @@ const AddOrEditScheduleModal = forwardRef(
                             >
                               <Input placeholder="sec" />
                             </Form.Item>
-                          </>
+                            <div
+                              style={{
+                                paddingLeft: "10px",
+                                display: "inline-block",
+                                width: "calc(10%)",
+                              }}
+                            >
+                              <MinusCircleOutlined
+                                onClick={() => remove(field.name)}
+                              />
+                            </div>
+                          </div>
                         ))}
                         <Form.Item>
                           <Button
+                            disabled={schedule ? false : true}
                             type="dashed"
                             onClick={() => add()}
                             block
@@ -283,7 +353,7 @@ const AddOrEditScheduleModal = forwardRef(
                             Add task
                           </Button>
                         </Form.Item>
-                      </>
+                      </div>
                     );
                   }}
                 </Form.List>
@@ -293,7 +363,7 @@ const AddOrEditScheduleModal = forwardRef(
               <Form.Item
                 label="Rule"
                 name="rule"
-                rules={[{ required: true, message: "Please enter rule!" }]}
+                rules={[{ required: true, message: "Please enter rule" }]}
               >
                 <Input />
               </Form.Item>
@@ -302,6 +372,7 @@ const AddOrEditScheduleModal = forwardRef(
                   style={{
                     marginTop: "2px",
                     marginBottom: "0px",
+                    color: "gray",
                   }}
                 >
                   {readableRule}
@@ -317,6 +388,7 @@ const AddOrEditScheduleModal = forwardRef(
                       // fontSize: "12px",
                       marginBottom: "-2px",
                       marginTop: "2px",
+                      color: "gray",
                     }}
                   >
                     {value}
