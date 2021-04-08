@@ -118,7 +118,6 @@ const AddOrEditScheduleModal = forwardRef(
     );
 
     useEffect(() => {
-      console.log(defaultTimezone);
       form.resetFields();
       let initialValues: Schedule;
       if (schedule) {

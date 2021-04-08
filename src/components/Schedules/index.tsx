@@ -132,8 +132,27 @@ const Schedules = () => {
             render={(record) => record.runtimeResource.friendlyName}
           />
           <Column title="Priority" dataIndex="priority" />
-          <Column title="Valid from" dataIndex="validFrom" />
-          <Column title="Valid until" dataIndex="validUntil" />
+          <Column
+            title="Timezone"
+            render={(record) =>
+              record.timezone ||
+              (settings?.filter(
+                (setting) => setting.key === "defaultTimezone"
+              )[0]?.value as string)
+            }
+          />
+          <Column
+            title="Valid from"
+            render={(record) =>
+              record.validFrom.replace("T", " ").replace(".000", "")
+            }
+          />
+          <Column
+            title="Valid until"
+            render={(record) =>
+              record.validUntil.replace("T", " ").replace(".000", "")
+            }
+          />
           <Column
             title="Soft timeout"
             render={(record) => {
