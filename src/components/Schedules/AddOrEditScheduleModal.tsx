@@ -1,7 +1,17 @@
 import timezones from "./timezones.json";
 import React, { forwardRef, useCallback, useEffect, useState } from "react";
 import CustomModal from "../CustomModal";
-import { Button, Col, DatePicker, Form, Input, Row, Select, Space } from "antd";
+import {
+  Button,
+  Col,
+  DatePicker,
+  Form,
+  Input,
+  Row,
+  Select,
+  Space,
+  Tooltip,
+} from "antd";
 import fetchApi from "../../services/fetchApi";
 import notification from "../../utils/notification";
 import {
@@ -194,19 +204,21 @@ const AddOrEditScheduleModal = forwardRef(
               >
                 <Input />
               </Form.Item>
-              <Form.Item
-                label="Priority"
-                name="priority"
-                rules={[
-                  { required: true, message: "Please specify priority" },
-                  {
-                    pattern: /^[1-9]{1,}\d*$/,
-                    message: "Must be a number greater than 0",
-                  },
-                ]}
-              >
-                <Input />
-              </Form.Item>
+              <Tooltip title="Priority 1 is the highest priority. Recommended priority setting is to use 10, 20, 30 ... instead of 1, 2, 3 ..., its easier to add a new schedule with priority in between.">
+                <Form.Item
+                  label="Priority"
+                  name="priority"
+                  rules={[
+                    { required: true, message: "Please specify priority" },
+                    {
+                      pattern: /^[1-9]{1,}\d*$/,
+                      message: "Must be a number greater than 0",
+                    },
+                  ]}
+                >
+                  <Input />
+                </Form.Item>
+              </Tooltip>
               <Form.Item
                 label="Valid from"
                 name="_validFrom"
@@ -359,13 +371,15 @@ const AddOrEditScheduleModal = forwardRef(
               </Form.Item>
             </Col>
             <Col span={10}>
-              <Form.Item
-                label="Rule"
-                name="rule"
-                rules={[{ required: true, message: "Please enter rule" }]}
-              >
-                <Input />
-              </Form.Item>
+              <Tooltip title='Rule is a "cron" expression. --- Order: Minute, Hour, Day of month, Month, Day of week. --- Ranges (-): 0 4-8 * * * means run each hour between 4 and 8 AM, and 30 13 * * 1-5 means run 1:30 PM from Monday to Friday. --- Multiple (,): 0,30 6 * * * means run at 6 and 6:30 AM. --- Frequency (/): 0/15 * * * * means run every 15 minutes.'>
+                <Form.Item
+                  label="Rule"
+                  name="rule"
+                  rules={[{ required: true, message: "Please enter rule" }]}
+                >
+                  <Input />
+                </Form.Item>
+              </Tooltip>
               <Form.Item label="Rule translation">
                 <p
                   style={{
