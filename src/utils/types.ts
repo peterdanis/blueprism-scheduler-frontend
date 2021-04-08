@@ -118,3 +118,8 @@ export type Task = {
   scheduleTask?: ScheduleTask[];
   softTimeout?: number;
 };
+
+export type Setting = {
+  key: string;
+  value: string;
+};
