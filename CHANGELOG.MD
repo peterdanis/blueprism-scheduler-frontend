@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 ## [0.2.1]
 
 - Add icon
+- Extend Tasks and Schedules with soft/hard timeouts
+- Enable starting schedule from Schedules view
 
 ## [0.2.0]
 
