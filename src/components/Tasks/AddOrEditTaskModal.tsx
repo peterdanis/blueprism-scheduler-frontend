@@ -1,6 +1,15 @@
 import React, { forwardRef, useEffect, useState } from "react";
 import CustomModal from "../CustomModal";
-import { Button, Col, DatePicker, Form, Input, Row, Select } from "antd";
+import {
+  Button,
+  Col,
+  DatePicker,
+  Form,
+  Input,
+  Row,
+  Select,
+  Tooltip,
+} from "antd";
 import fetchApi from "../../services/fetchApi";
 import notification from "../../utils/notification";
 import { RuntimeResource, Schedule, Task } from "../../utils/types";
@@ -32,6 +41,8 @@ const AddOrEditTaskModal = forwardRef(({ loadData, task }: Props, ref) => {
       name: form.getFieldValue("name"),
       process: form.getFieldValue("process"),
       inputs: getInputs(),
+      softTimeout: form.getFieldValue("softTimeout"),
+      hardTimeout: form.getFieldValue("hardTimeout"),
     };
     if (task) {
       result = await fetchApi(`/api/tasks/${task.id}`, "PATCH", data);
@@ -58,6 +69,8 @@ const AddOrEditTaskModal = forwardRef(({ loadData, task }: Props, ref) => {
       initialValues = {
         name: "",
         process: "",
+        softTimeout: 86400000,
+        hardTimeout: 86400000,
       };
     }
     form.setFieldsValue(initialValues);
@@ -91,20 +104,32 @@ const AddOrEditTaskModal = forwardRef(({ loadData, task }: Props, ref) => {
           name="name"
           rules={[{ required: true, message: "Please enter schedule name" }]}
         >
-          <Input />
+          <Input placeholder="Task name" />
         </Form.Item>
-        <Form.Item
-          label="Process name"
-          name="process"
-          rules={[
-            {
-              required: true,
-              message: "Please enter process name",
-            },
-          ]}
-        >
-          <Input />
-        </Form.Item>
+        <Tooltip title="Process name, exactly as it appears in BP.">
+          <Form.Item
+            label="Process name"
+            name="process"
+            rules={[
+              {
+                required: true,
+                message: "Please enter process name",
+              },
+            ]}
+          >
+            <Input placeholder="Process name, exactly as it appears in BP." />
+          </Form.Item>
+        </Tooltip>
+        <Tooltip title="Soft timeout means that a 'stop request' will be sent. Timeout is in milliseconds.">
+          <Form.Item label="Soft timeout" name="softTimeout">
+            <Input />
+          </Form.Item>
+        </Tooltip>
+        <Tooltip title="Hard timeout means that task will be killed. Timeout is in milliseconds.">
+          <Form.Item label="Hard timeout" name="hardTimeout">
+            <Input />
+          </Form.Item>
+        </Tooltip>
         <Form.Item label="Inputs">
           <Form.List name="inputs">
             {(fields, { add, remove }) => {

@@ -86,6 +86,8 @@ const AddOrEditScheduleModal = forwardRef(
           id: form.getFieldValue("runtimeResourceId"),
         } as RuntimeResource,
         scheduleTask: getScheduledTask(),
+        softTimeout: form.getFieldValue("softTimeout"),
+        hardTimeout: form.getFieldValue("hardTimeout"),
         timezone: form.getFieldValue("timezone"),
         validFrom: form.getFieldValue("_validFrom"),
         validUntil: form.getFieldValue("_validUntil"),
@@ -141,6 +143,8 @@ const AddOrEditScheduleModal = forwardRef(
           priority: defaultPriority,
           rule: "0 16 * * *",
           timezone: defaultTimezone,
+          softTimeout: 86400000,
+          hardTimeout: 86400000,
           validFrom: new Date(),
           validUntil: new Date("9999-12-31T00:00:00Z"),
         };
@@ -256,6 +260,16 @@ const AddOrEditScheduleModal = forwardRef(
                   })}
                 </Select>
               </Form.Item>
+              <Tooltip title="Soft timeout means that a 'stop request' will be sent. Timeout is in milliseconds.">
+                <Form.Item label="Soft timeout" name="softTimeout">
+                  <Input />
+                </Form.Item>
+              </Tooltip>
+              <Tooltip title="Hard timeout means that currently running task will be killed and job will be stopped. Timeout is in milliseconds.">
+                <Form.Item label="Hard timeout" name="hardTimeout">
+                  <Input />
+                </Form.Item>
+              </Tooltip>
               <Form.Item
                 label="Rule timezone"
                 name="timezone"

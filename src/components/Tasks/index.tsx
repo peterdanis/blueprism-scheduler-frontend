@@ -86,11 +86,11 @@ const Tasks = () => {
           <Column
             title="Hard timeout"
             render={(record) => {
-              if (record.softTimeout) {
+              if (record.hardTimeout) {
                 return `${moment
-                  .duration(record.softTimeout)
-                  .days()}d ${moment.duration(record.softTimeout).hours()}h
-                  ${moment.duration(record.softTimeout).minutes()}m`;
+                  .duration(record.hardTimeout)
+                  .days()}d ${moment.duration(record.hardTimeout).hours()}h
+                  ${moment.duration(record.hardTimeout).minutes()}m`;
               }
             }}
           />
