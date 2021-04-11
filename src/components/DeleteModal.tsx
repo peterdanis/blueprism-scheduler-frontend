@@ -7,30 +7,50 @@ type Props = {
   id: number;
   route: string;
   loadData: () => void;
+  customText?: string;
+  customButtonName?: string;
+  customNotificationText?: string;
 };
 
-const DeleteModal = forwardRef(({ id, route, loadData }: Props, ref) => {
-  const onOkHandler = async () => {
-    const url = `${route}/${id}`;
-    const result = await fetchApi(url, "DELETE", { id });
-    if (result) {
-      notification("Deleted", undefined, "success", 6);
-      loadData();
-    }
-  };
+const DeleteModal = forwardRef(
+  (
+    {
+      id,
+      route,
+      loadData,
+      customButtonName,
+      customNotificationText,
+      customText,
+    }: Props,
+    ref
+  ) => {
+    const onOkHandler = async () => {
+      const url = `${route}/${id}`;
+      const result = await fetchApi(url, "DELETE", { id });
+      if (result) {
+        notification(
+          customNotificationText || "Deleted",
+          undefined,
+          "success",
+          6
+        );
+        loadData();
+      }
+    };
 
-  return (
-    <CustomModal
-      key="DeleteModal"
-      okFn={onOkHandler}
-      okButtonName="Delete"
-      cancelButtonName="Cancel"
-      ref={ref}
-      danger={true}
-    >
-      <h3>Confirm deleting</h3>
-    </CustomModal>
-  );
-});
+    return (
+      <CustomModal
+        key="DeleteModal"
+        okFn={onOkHandler}
+        okButtonName={customButtonName || "Delete"}
+        cancelButtonName="Cancel"
+        ref={ref}
+        danger={true}
+      >
+        <h3>{customText || "Confirm deleting"}</h3>
+      </CustomModal>
+    );
+  }
+);
 
 export default DeleteModal;

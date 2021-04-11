@@ -8,6 +8,7 @@ import { StopOutlined } from "@ant-design/icons";
 import ColumnGroup from "antd/lib/table/ColumnGroup";
 import { Job, JobLog, RuntimeResource, Schedule } from "../../utils/types";
 import catchAndNotify from "../../utils/catchAndNotify";
+import DeleteModal from "../DeleteModal";
 
 type modifiedJobLog = JobLog & {
   runtimeResource: RuntimeResource;
@@ -29,7 +30,7 @@ const Jobs = () => {
   );
 
   // const AddUserModalRef = useRef<{ showModal: () => void }>(null);
-  // const DeleteUserModalRef = useRef<{ showModal: () => void }>(null);
+  const deleteJobModalRef = useRef<{ showModal: () => void }>(null);
 
   const loadJobs = () => {
     setIsLoadingJobs(true);
@@ -104,6 +105,15 @@ const Jobs = () => {
 
   return (
     <>
+      <DeleteModal
+        id={selectedJobId || 0}
+        route={"/api/jobs"}
+        ref={deleteJobModalRef}
+        loadData={loadJobs}
+        customButtonName="Stop / Cancel"
+        customNotificationText="Job stop / cancelation requested"
+        customText="Request job stop / cancelation"
+      />
       <Space direction="vertical" size="large">
         <SearchBox
           list={jobs}
@@ -182,7 +192,6 @@ const Jobs = () => {
                 <>
                   <Space>
                     <Button
-                      disabled
                       key={`${record.id}-stop`}
                       size="small"
                       type="primary"
@@ -190,7 +199,7 @@ const Jobs = () => {
                       icon={<StopOutlined />}
                       onClick={(e) => {
                         setSelectedJobId(record.id!);
-                        // DeleteUserModalRef?.current?.showModal();
+                        deleteJobModalRef?.current?.showModal();
                       }}
                     />
                   </Space>

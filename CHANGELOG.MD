@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 - Add icon
 - Extend Tasks and Schedules with soft/hard timeouts
 - Enable starting schedule from Schedules view
+- Enable job stop / cancelation
 
 ## [0.2.0]
 
