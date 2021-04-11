@@ -14,6 +14,7 @@ import { RuntimeResource, Schedule, Setting, Task } from "../../utils/types";
 import catchAndNotify from "../../utils/catchAndNotify";
 import DeleteModal from "../DeleteModal";
 import moment from "moment";
+import RunModal from "./RunModal";
 
 const Schedules = () => {
   const [schedules, setSchedules] = useState([] as Schedule[]);
@@ -29,6 +30,7 @@ const Schedules = () => {
 
   const addOrEditScheduleModalRef = useRef<{ showModal: () => void }>(null);
   const deleteScheduleModalRef = useRef<{ showModal: () => void }>(null);
+  const runModalRef = useRef<{ showModal: () => void }>(null);
 
   const loadData = () => {
     setIsLoading(true);
@@ -103,6 +105,7 @@ const Schedules = () => {
         ref={deleteScheduleModalRef}
         loadData={loadData}
       />
+      <RunModal id={selectedSchedule?.id || 0} ref={runModalRef} />
       <Space direction="vertical" size="large">
         <Button
           type="primary"
@@ -182,14 +185,13 @@ const Schedules = () => {
               <>
                 <Space>
                   <Button
-                    disabled
                     key={`${record.id}-run`}
                     size="small"
                     type={"primary"}
                     icon={<CaretRightOutlined />}
                     onClick={(e) => {
                       setSelectedSchedule(record);
-                      // xyzModalRef?.current?.showModal();
+                      runModalRef?.current?.showModal();
                     }}
                   >
                     Run
