@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.1]
+
+- Add icon
+
 ## [0.2.0]
 
 - Add filtering in selection fields
